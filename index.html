@@ -27,8 +27,8 @@
   .card { border:1px solid var(--ring); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:140px; transition: transform .08s ease, border-color .15s ease; }
   .card:hover { transform: translateY(-2px); border-color:#44506a; }
   .media { position:relative; border-radius:12px; overflow:hidden; background:#0f152b; display:flex; align-items:center; justify-content:center; border:1px solid #1f2942; }
-  .media.image { aspect-ratio:4/3; }   /* clearer thumbnails for photos */
-  .media.video { aspect-ratio:16/9; }  /* proper for YouTube */
+  .media.image { aspect-ratio:4/3; }
+  .media.video { aspect-ratio:16/9; }
   .media img, .media iframe { width:100%; height:100%; object-fit:cover; display:block; }
   .clickhint{ position:absolute; bottom:6px; right:8px; font-size:11px; color:#cbd5e1; opacity:.8; background:rgba(0,0,0,.25); padding:2px 6px; border-radius:8px; }
   .zoomable { cursor: zoom-in; }
@@ -50,12 +50,11 @@
   .notes { border:1px solid var(--ring); border-radius:14px; padding:12px; color:#d1d5db; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .legend { display:flex; flex-wrap:wrap; gap:8px; }
   .tag { border:1px solid var(--ring); border-radius:999px; padding:4px 10px; font-size:12px; color:#cbd5e1; }
-  .toggleRow { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:6px; }
   .muscleChips { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
   .mchip { border:1px solid var(--ring); border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-select:none; }
   .mchip.active { background:var(--ink); color:var(--ink-dark); border-color:transparent; }
   .qrbox { display:none; align-items:center; gap:10px; margin-left:8px; }
-  .qrbox input { width:260px; background:transparent; border:1px solid var(--ring); border-radius:10px; padding:10px; color:var(--ink); outline:none; }
+  .qrbox input { width:260px; background:transparent; border:1px solid var(--ring); border-radius:10px; padding:10px; color:#var(--ink); outline:none; }
   .qrbox img { width:64px; height:64px; border-radius:8px; border:1px solid var(--ring); background:#0f152b; }
   .maskOverlay{
     position:absolute; inset:0;
@@ -75,11 +74,8 @@
   .attachItem{ border:1px solid var(--ring); border-radius:12px; padding:10px; display:flex; gap:10px; align-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .attachThumb{ width:64px; height:64px; border-radius:10px; border:1px solid #1f2942; overflow:hidden; background:#0f152b; flex:0 0 64px; }
   .attachThumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .uploadRow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  input[type="file"]{ display:none; }
-  .fileLabel{ border:1px solid var(--ring); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:12px; }
 
-  /* Lightbox (full-screen image viewer) */
+  /* Lightbox */
   .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:9999; }
   .lightbox.open{ display:flex; }
   .lb-stage{ position:relative; width: min(96vw, 1400px); height: min(92vh, 90vw); }
@@ -89,6 +85,9 @@
   .lb-caption{ position:absolute; left:12px; bottom:12px; color:#cbd5e1; font-size:12px; background:rgba(0,0,0,.35); padding:6px 10px; border-radius:8px; max-width:70ch; }
   .lb-nav{ position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; }
   .lb-btn{ pointer-events:auto; border:1px solid #334155; background:rgba(255,255,255,.08); color:#e5e7eb; border-radius:10px; padding:10px 14px; cursor:pointer; }
+  .uploadRow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type="file"]{ display:none; }
+  .fileLabel{ border:1px solid var(--ring); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:12px; }
 </style>
 </head>
 <body>
@@ -109,10 +108,10 @@
   </header>
 
   <div id="routerView"></div>
-  <div class="foot">Click any image to view full screen. ESC closes, arrow keys navigate attachments. You’re welcome.</div>
+  <div class="foot">Click any image to view full screen. Use consistent file names: machine.jpg, muscles.png, attach1.jpg.</div>
 </div>
 
-<!-- Lightbox root -->
+<!-- Lightbox -->
 <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
   <div class="lb-stage" id="lbStage" aria-label="Image viewer">
     <div class="lb-img"><img id="lbImg" alt=""></div>
@@ -125,206 +124,202 @@
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
+  // Put images in your repo using: Image/<ExerciseFolder>/{machine.jpg,muscles.png,attach1.jpg,...}
   const PLAN = {
     label: "Grouped by Muscle",
     groups: {
-  Back: [
-    { name: "Warm-up", slug: "back-warmup", order: 1, sets: "10 min",
-      youtube: "",
-      photo: "Image/BackWarmup/photo.jpg",
-      muscles: { primary: [], secondary: [], masks: [] },
-      muscleImage: "Image/BackWarmup/muscle.png",
-      attachments: [],
-      notes: "Light pulldowns/rows, scap pull-ups, band work. Keep it easy."
-    },
-    { name: "Lat Pulldown (MAG Grip)", slug: "lat-mag", order: 2, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
-      photo: "Image/LatPulldownMagGrip/photo.jpg",
-      muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Biceps"], masks: [] },
-      muscleImage: "Image/LatPulldownMagGrip/muscle.png",
-      attachments: [{ name: "MAG neutral/wide", photo: "Image/LatPulldownMagGrip/handle.jpg"  }],
-      notes: "Elbows drive to ribs, torso still, full stretch at top."
-    },
-    { name: "Lat Pulldown (Wide Grip)", slug: "lat-wide", order: 3, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/bNmvKpJSWKM",
-      photo: "Image/LatPulldownWideGrip/photo.jpg",
-      muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Mid traps"], masks: [] },
-      muscleImage: "Image/LatPulldownWideGrip/muscle.png",
-      attachments: [{ name: "Wide lat bar", photo: "Image/LatPulldownWideGrip/bar.jpg" }],
-      notes: "Grip wider than shoulders, chest up, pull to upper chest."
-    },
-    { name: "Rear Delts", slug: "rear-delts-back", order: 4, sets: "3 × 12",
-      youtube: "https://www.youtube.com/shorts/7tgx6QHB0-A",
-      photo: "Image/RearDeltsBack/photo.jpg",
-      muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
-      muscleImage: "Image/RearDeltsBack/muscle.png",
-      attachments: [{ name: "Rear-delt machine", photo: "Image/RearDeltsBack/machine.jpg" }],
-      notes: "Lead with elbows, no shrug, slight pause at peak."
-    },
-    { name: "Dumbbell Curl", slug: "dumbbell-curl", order: 5, sets: "3 × 10",
-      youtube: "https://www.youtube.com/shorts/FHY_2t7R714",
-      photo: "Image/DumbbellCurl/photo.jpg",
-      muscles: { primary: ["Biceps brachii"], secondary: ["Brachialis"], masks: [] },
-      muscleImage: "Image/DumbbellCurl/muscle.png",
-      attachments: [{ name: "Dumbbells", photo: "Image/DumbbellCurl/dumbbells.jpg" }],
-      notes: "Wrists neutral, shoulders quiet, control the eccentric."
-    },
-    { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-back", order: 6, sets: "3 × 12",
-      youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
-      photo: "Image/LateralRaiseCableBack/photo.jpg",
-      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
-      muscleImage: "Image/LateralRaiseCableBack/muscle.png",
-      attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableBack/handle.jpg" }],
-      notes: "Soft elbows, raise to shoulder height, avoid shrugging."
-    },
-    { name: "Leg Raises", slug: "leg-raises-back", order: 7, sets: "3 × 15",
-      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
-      photo: "Image/LegRaisesBack/photo.jpg",
-      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
-      muscleImage: "Image/LegRaisesBack/muscle.png",
-      attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesBack/chair.jpg" }],
-      notes: "Posterior tilt, slow lower, no swinging."
+      Back: [
+        { name: "Warm-up", slug: "back-warmup", order: 1, sets: "10 min",
+          youtube: "",
+          machine: "Image/BackWarmup/machine.jpg",
+          muscles: { primary: [], secondary: [], masks: [] },
+          muscleImage: "Image/BackWarmup/muscles.png",
+          attachments: [],
+          notes: "Light pulldowns/rows, scap pull-ups, band work. Keep it easy."
+        },
+        { name: "Lat Pulldown (MAG Grip)", slug: "lat-mag", order: 2, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
+          machine: "Image/LatPulldownMagGrip/machine.jpg",
+          muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Biceps"], masks: [] },
+          muscleImage: "Image/LatPulldownMagGrip/muscles.png",
+          attachments: [{ name: "MAG neutral/wide", photo: "Image/LatPulldownMagGrip/attach1.jpg" }],
+          notes: "Elbows drive to ribs, torso still, full stretch at top."
+        },
+        { name: "Lat Pulldown (Wide Grip)", slug: "lat-wide", order: 3, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/bNmvKpJSWKM",
+          machine: "Image/LatPulldownWideGrip/machine.jpg",
+          muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Mid traps"], masks: [] },
+          muscleImage: "Image/LatPulldownWideGrip/muscles.png",
+          attachments: [{ name: "Wide lat bar", photo: "Image/LatPulldownWideGrip/attach1.jpg" }],
+          notes: "Grip wider than shoulders, chest up, pull to upper chest."
+        },
+        { name: "Rear Delts", slug: "rear-delts-back", order: 4, sets: "3 × 12",
+          youtube: "https://www.youtube.com/shorts/7tgx6QHB0-A",
+          machine: "Image/RearDeltsBack/machine.jpg",
+          muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
+          muscleImage: "Image/RearDeltsBack/muscles.png",
+          attachments: [{ name: "Rear-delt machine", photo: "Image/RearDeltsBack/attach1.jpg" }],
+          notes: "Lead with elbows, no shrug, slight pause at peak."
+        },
+        { name: "Dumbbell Curl", slug: "dumbbell-curl", order: 5, sets: "3 × 10",
+          youtube: "https://www.youtube.com/shorts/FHY_2t7R714",
+          machine: "Image/DumbbellCurl/machine.jpg",
+          muscles: { primary: ["Biceps brachii"], secondary: ["Brachialis"], masks: [] },
+          muscleImage: "Image/DumbbellCurl/muscles.png",
+          attachments: [{ name: "Dumbbells", photo: "Image/DumbbellCurl/attach1.jpg" }],
+          notes: "Wrists neutral, shoulders quiet, control the eccentric."
+        },
+        { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-back", order: 6, sets: "3 × 12",
+          youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
+          machine: "Image/LateralRaiseCableBack/machine.jpg",
+          muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+          muscleImage: "Image/LateralRaiseCableBack/muscles.png",
+          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableBack/attach1.jpg" }],
+          notes: "Soft elbows, raise to shoulder height, avoid shrugging."
+        },
+        { name: "Leg Raises", slug: "leg-raises-back", order: 7, sets: "3 × 15",
+          youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+          machine: "Image/LegRaisesBack/machine.jpg",
+          muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+          muscleImage: "Image/LegRaisesBack/muscles.png",
+          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesBack/attach1.jpg" }],
+          notes: "Posterior tilt, slow lower, no swinging."
+        }
+      ],
+      Shoulders: [
+        { name: "Warm-up", slug: "shoulder-warmup", order: 1, sets: "10 min",
+          youtube: "",
+          machine: "Image/ShoulderWarmup/machine.jpg",
+          muscles: { primary: [], secondary: [], masks: [] },
+          muscleImage: "Image/ShoulderWarmup/muscles.png",
+          attachments: [],
+          notes: "Bands, scapular CARs, light raises. Keep it easy."
+        },
+        { name: "Shoulder Press", slug: "shoulder-press", order: 2, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/k6tzKisR3NY",
+          machine: "Image/ShoulderPress/machine.jpg",
+          muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
+          muscleImage: "Image/ShoulderPress/muscles.png",
+          attachments: [{ name: "Bench + dumbbells/bar", photo: "Image/ShoulderPress/attach1.jpg" }],
+          notes: "Ribs down, no over-arch, finish with biceps by ears."
+        },
+        { name: "Lateral Raise", slug: "lateral-raise", order: 3, sets: "3 × 12",
+          youtube: "https://www.youtube.com/shorts/Kl3LEzQ5Zqs",
+          machine: "Image/LateralRaise/machine.jpg",
+          muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+          muscleImage: "Image/LateralRaise/muscles.png",
+          attachments: [{ name: "Dumbbells", photo: "Image/LateralRaise/attach1.jpg" }],
+          notes: "Lead with elbows, slight torso lean OK, controlled tempo."
+        },
+        { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-shoulder", order: 4, sets: "3 × 12",
+          youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
+          machine: "Image/LateralRaiseCableShoulder/machine.jpg",
+          muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+          muscleImage: "Image/LateralRaiseCableShoulder/muscles.png",
+          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableShoulder/attach1.jpg" }],
+          notes: "Cable behind body, raise to about 90°, no shrug."
+        },
+        { name: "Machine Shoulder Press", slug: "machine-shoulder-press", order: 5, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/6v4nrRVySj0",
+          machine: "Image/MachineShoulderPress/machine.jpg",
+          muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
+          muscleImage: "Image/MachineShoulderPress/muscles.png",
+          attachments: [{ name: "Machine handles", photo: "Image/MachineShoulderPress/attach1.jpg" }],
+          notes: "Seat height so handles start at jaw-chin level. Smooth reps."
+        },
+        { name: "Zottman Curl", slug: "zottman-curl", order: 6, sets: "3 × 10",
+          youtube: "https://www.youtube.com/watch?v=wrjEdVZrkhk",
+          machine: "Image/ZottmanCurl/machine.jpg",
+          muscles: { primary: ["Biceps brachii","Brachioradialis"], secondary: ["Forearms"], masks: [] },
+          muscleImage: "Image/ZottmanCurl/muscles.png",
+          attachments: [{ name: "Dumbbells", photo: "Image/ZottmanCurl/attach1.jpg" }],
+          notes: "Supinated up, pronated down. Control the rotation."
+        },
+        { name: "Triceps Rope", slug: "triceps-rope", order: 7, sets: "3 × 12",
+          youtube: "https://www.youtube.com/watch?v=JDEDaZTEzGE",
+          machine: "Image/TricepsRope/machine.jpg",
+          muscles: { primary: ["Triceps"], secondary: [], masks: [] },
+          muscleImage: "Image/TricepsRope/muscles.png",
+          attachments: [{ name: "Rope", photo: "Image/TricepsRope/attach1.jpg" }],
+          notes: "Elbows pinned, spread rope at the bottom, full lockout."
+        },
+        { name: "Leg Raises", slug: "leg-raises-shoulder", order: 8, sets: "3 × 15",
+          youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+          machine: "Image/LegRaisesShoulder/machine.jpg",
+          muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+          muscleImage: "Image/LegRaisesShoulder/muscles.png",
+          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesShoulder/attach1.jpg" }],
+          notes: "Posterior tilt, slow eccentric, no momentum."
+        }
+      ],
+      Chest: [
+        { name: "Warm-up", slug: "chest-warmup", order: 1, sets: "10 min",
+          youtube: "",
+          machine: "Image/ChestWarmup/machine.jpg",
+          muscles: { primary: [], secondary: [], masks: [] },
+          muscleImage: "Image/ChestWarmup/muscles.png",
+          attachments: [],
+          notes: "Scap push-ups, band pull-aparts, light presses."
+        },
+        { name: "Chest Press (Dumbbell)", slug: "chest-press-dumbbell", order: 2, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/8fXfwG4ftaQ",
+          machine: "Image/ChestPressDumbbell/machine.jpg",
+          muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+          muscleImage: "Image/ChestPressDumbbell/muscles.png",
+          attachments: [{ name: "Flat bench + dumbbells", photo: "Image/ChestPressDumbbell/attach1.jpg" }],
+          notes: "Wrists stacked, slight arch, control the touch on chest."
+        },
+        { name: "Chest Press (Machine)", slug: "chest-press-machine", order: 3, sets: "3 × 8",
+          youtube: "https://www.youtube.com/watch?v=vnd-GBtTMLI",
+          machine: "Image/ChestPressMachine/machine.jpg",
+          muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+          muscleImage: "Image/ChestPressMachine/muscles.png",
+          attachments: [{ name: "Machine handles", photo: "Image/ChestPressMachine/attach1.jpg" }],
+          notes: "Seat so handles align mid-chest; steady tempo."
+        },
+        { name: "Chest Fly", slug: "chest-fly", order: 4, sets: "3 × 10",
+          youtube: "https://www.youtube.com/shorts/rk8YayRoTRQ",
+          machine: "Image/ChestFly/machine.jpg",
+          muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts"], masks: [] },
+          muscleImage: "Image/ChestFly/muscles.png",
+          attachments: [{ name: "Pec deck or cables", photo: "Image/ChestFly/attach1.jpg" }],
+          notes: "Soft elbows, big stretch, squeeze at midline."
+        },
+        { name: "Chest Machine", slug: "chest-machine", order: 5, sets: "3 × 8",
+          youtube: "https://www.youtube.com/shorts/2awX3rTGa1k",
+          machine: "Image/ChestMachine/machine.jpg",
+          muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+          muscleImage: "Image/ChestMachine/muscles.png",
+          attachments: [{ name: "Machine handles", photo: "Image/ChestMachine/attach1.jpg" }],
+          notes: "Scapulae retracted, no bouncing, full range."
+        },
+        { name: "Skullcrushers", slug: "skullcrushers", order: 6, sets: "3 × 10",
+          youtube: "https://www.youtube.com/shorts/whUDFbWQjBI",
+          machine: "Image/Skullcrushers/machine.jpg",
+          muscles: { primary: ["Triceps (long head)"], secondary: [], masks: [] },
+          muscleImage: "Image/Skullcrushers/muscles.png",
+          attachments: [{ name: "EZ-bar or dumbbells", photo: "Image/Skullcrushers/attach1.jpg" }],
+          notes: "Upper arms stable, lower to behind head for stretch."
+        },
+        { name: "Rear Delts", slug: "rear-delts-chest", order: 7, sets: "3 × 12",
+          youtube: "https://www.youtube.com/shorts/Gs4e8eVMj-Q",
+          machine: "Image/RearDeltsChest/machine.jpg",
+          muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
+          muscleImage: "Image/RearDeltsChest/muscles.png",
+          attachments: [{ name: "Reverse pec deck or cables", photo: "Image/RearDeltsChest/attach1.jpg" }],
+          notes: "Control the last 30°; no momentum, no shrug."
+        },
+        { name: "Leg Raises", slug: "leg-raises-chest", order: 8, sets: "3 × 15",
+          youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+          machine: "Image/LegRaisesChest/machine.jpg",
+          muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+          muscleImage: "Image/LegRaisesChest/muscles.png",
+          attachments: [{ name: "Captain’s chair or bar", photo: "Image/LegRaisesChest/attach1.jpg" }],
+          notes: "Posterior tilt, heels together, slow lower."
+        }
+      ],
+      Legs: []
     }
-  ],
-
-  Shoulders: [
-    { name: "Warm-up", slug: "shoulder-warmup", order: 1, sets: "10 min",
-      youtube: "",
-      photo: "Image/ShoulderWarmup/photo.jpg",
-      muscles: { primary: [], secondary: [], masks: [] },
-      muscleImage: "Image/ShoulderWarmup/muscle.png",
-      attachments: [],
-      notes: "Bands, scapular CARs, light raises. Keep it easy."
-    },
-    { name: "Shoulder Press", slug: "shoulder-press", order: 2, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/k6tzKisR3NY",
-      photo: "Image/ShoulderPress/photo.jpg",
-      muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
-      muscleImage: "Image/ShoulderPress/muscle.png",
-      attachments: [{ name: "Bench + dumbbells/bar", photo: "Image/ShoulderPress/setup.jpg" }],
-      notes: "Ribs down, no over-arch, finish with biceps by ears."
-    },
-    { name: "Lateral Raise", slug: "lateral-raise", order: 3, sets: "3 × 12",
-      youtube: "https://www.youtube.com/shorts/Kl3LEzQ5Zqs",
-      photo: "Image/LateralRaise/photo.jpg",
-      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
-      muscleImage: "Image/LateralRaise/muscle.png",
-      attachments: [{ name: "Dumbbells", photo: "Image/LateralRaise/dumbbells.jpg" }],
-      notes: "Lead with elbows, slight torso lean OK, controlled tempo."
-    },
-    { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-shoulder", order: 4, sets: "3 × 12",
-      youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
-      photo: "Image/LateralRaiseCableShoulder/photo.jpg",
-      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
-      muscleImage: "Image/LateralRaiseCableShoulder/muscle.png",
-      attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableShoulder/handle.jpg" }],
-      notes: "Cable behind body, raise to about 90°, no shrug."
-    },
-    { name: "Machine Shoulder Press", slug: "machine-shoulder-press", order: 5, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/6v4nrRVySj0",
-      photo: "Image/MachineShoulderPress/photo.jpg",
-      muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
-      muscleImage: "Image/MachineShoulderPress/muscle.png",
-      attachments: [{ name: "Machine handles", photo: "Image/MachineShoulderPress/handles.jpg" }],
-      notes: "Seat height so handles start at jaw-chin level. Smooth reps."
-    },
-    { name: "Zottman Curl", slug: "zottman-curl", order: 6, sets: "3 × 10",
-      youtube: "https://www.youtube.com/watch?v=wrjEdVZrkhk",
-      photo: "Image/ZottmanCurl/photo.jpg",
-      muscles: { primary: ["Biceps brachii","Brachioradialis"], secondary: ["Forearms"], masks: [] },
-      muscleImage: "Image/ZottmanCurl/muscle.png",
-      attachments: [{ name: "Dumbbells", photo: "Image/ZottmanCurl/dumbbells.jpg" }],
-      notes: "Supinated up, pronated down. Control the rotation."
-    },
-    { name: "Triceps Rope", slug: "triceps-rope", order: 7, sets: "3 × 12",
-      youtube: "https://www.youtube.com/watch?v=JDEDaZTEzGE",
-      photo: "Image/TricepsRope/photo.jpg",
-      muscles: { primary: ["Triceps"], secondary: [], masks: [] },
-      muscleImage: "Image/TricepsRope/muscle.png",
-      attachments: [{ name: "Rope", photo: "Image/TricepsRope/rope.jpg" }],
-      notes: "Elbows pinned, spread rope at the bottom, full lockout."
-    },
-    { name: "Leg Raises", slug: "leg-raises-shoulder", order: 8, sets: "3 × 15",
-      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
-      photo: "Image/LegRaisesShoulder/photo.jpg",
-      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
-      muscleImage: "Image/LegRaisesShoulder/muscle.png",
-      attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesShoulder/chair.jpg" }],
-      notes: "Posterior tilt, slow eccentric, no momentum."
-    }
-  ],
-
-  Chest: [
-    { name: "Warm-up", slug: "chest-warmup", order: 1, sets: "10 min",
-      youtube: "",
-      photo: "Image/ChestWarmup/photo.jpg",
-      muscles: { primary: [], secondary: [], masks: [] },
-      muscleImage: "Image/ChestWarmup/muscle.png",
-      attachments: [],
-      notes: "Scap push-ups, band pull-aparts, light presses."
-    },
-    { name: "Chest Press (Dumbbell)", slug: "chest-press-dumbbell", order: 2, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/8fXfwG4ftaQ",
-      photo: "Image/ChestPressDumbbell/photo.jpg",
-      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
-      muscleImage: "Image/ChestPressDumbbell/muscle.png",
-      attachments: [{ name: "Flat bench + dumbbells", photo: "Image/ChestPressDumbbell/bench-db.jpg" }],
-      notes: "Wrists stacked, slight arch, control the touch on chest."
-    },
-    { name: "Chest Press (Machine)", slug: "chest-press-machine", order: 3, sets: "3 × 8",
-      youtube: "https://www.youtube.com/watch?v=vnd-GBtTMLI",
-      photo: "Image/ChestPressMachine/photo.jpg",
-      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
-      muscleImage: "Image/ChestPressMachine/muscle.png",
-      attachments: [{ name: "Machine handles", photo: "Image/ChestPressMachine/handles.jpg" }],
-      notes: "Seat so handles align mid-chest; steady tempo."
-    },
-    { name: "Chest Fly", slug: "chest-fly", order: 4, sets: "3 × 10",
-      youtube: "https://www.youtube.com/shorts/rk8YayRoTRQ",
-      photo: "Image/ChestFly/photo.jpg",
-      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts"], masks: [] },
-      muscleImage: "Image/ChestFly/muscle.png",
-      attachments: [{ name: "Pec deck or cables", photo: "Image/ChestFly/pec-deck.jpg" }],
-      notes: "Soft elbows, big stretch, squeeze at midline."
-    },
-    { name: "Chest Machine", slug: "chest-machine", order: 5, sets: "3 × 8",
-      youtube: "https://www.youtube.com/shorts/2awX3rTGa1k",
-      photo: "Image/ChestMachine/photo.jpg",
-      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
-      muscleImage: "Image/ChestMachine/muscle.png",
-      attachments: [{ name: "Machine handles", photo: "Image/ChestMachine/handles.jpg" }],
-      notes: "Scapulae retracted, no bouncing, full range."
-    },
-    { name: "Skullcrushers", slug: "skullcrushers", order: 6, sets: "3 × 10",
-      youtube: "https://www.youtube.com/shorts/whUDFbWQjBI",
-      photo: "Image/Skullcrushers/photo.jpg",
-      muscles: { primary: ["Triceps (long head)"], secondary: [], masks: [] },
-      muscleImage: "Image/Skullcrushers/muscle.png",
-      attachments: [{ name: "EZ-bar or dumbbells", photo: "Image/Skullcrushers/ezbar-db.jpg" }],
-      notes: "Upper arms stable, lower to behind head for stretch."
-    },
-    { name: "Rear Delts", slug: "rear-delts-chest", order: 7, sets: "3 × 12",
-      youtube: "https://www.youtube.com/shorts/Gs4e8eVMj-Q",
-      photo: "Image/RearDeltsChest/photo.jpg",
-      muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
-      muscleImage: "Image/RearDeltsChest/muscle.png",
-      attachments: [{ name: "Reverse pec deck or cables", photo: "Image/RearDeltsChest/reverse-pec-deck.jpg" }],
-      notes: "Control the last 30°; no momentum, no shrug."
-    },
-    { name: "Leg Raises", slug: "leg-raises-chest", order: 8, sets: "3 × 15",
-      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
-      photo: "Image/LegRaisesChest/photo.jpg",
-      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
-      muscleImage: "Image/LegRaisesChest/muscle.png",
-      attachments: [{ name: "Captain’s chair or bar", photo: "Image/LegRaisesChest/chair.jpg" }],
-      notes: "Posterior tilt, heels together, slow lower."
-    }
-  ],
-
-  Legs: []
-}
-
-
   };
   // ---------- STOP EDITING HERE ----------
 
@@ -339,6 +334,7 @@
 
   planLabel.textContent = PLAN.label || "";
 
+  // EU clock dd/mm/yyyy HH:MM:SS
   function two(n){ return String(n).padStart(2,"0"); }
   function formatEU(d){ return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`; }
   function tick(){ clockEl.textContent = formatEU(new Date()); }
@@ -510,7 +506,161 @@
   }
   function lsKey(group, slug){ return `muscleImage:${group}:${slug}`; }
 
-    function renderExerciseView(group, slug){
+  function renderMuscleBox(group, slug, ex){
+    const musclesBox = document.createElement("div");
+    musclesBox.className = "card";
+
+    const topRow = document.createElement("div");
+    topRow.style.display = "flex";
+    topRow.style.alignItems = "center";
+    topRow.style.justifyContent = "space-between";
+    const musclesTitle = document.createElement("div");
+    musclesTitle.className = "name";
+    musclesTitle.textContent = "Target muscles";
+    topRow.appendChild(musclesTitle);
+
+    const uploadControls = document.createElement("div");
+    uploadControls.className = "uploadRow";
+    const fileInput = document.createElement("input");
+    fileInput.type = "file"; fileInput.accept = "image/*"; fileInput.id = "file-"+group+"-"+slug;
+    const label = document.createElement("label");
+    label.className = "fileLabel"; label.setAttribute("for", fileInput.id);
+    label.textContent = "Upload muscle image (local)";
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "btn sm"; clearBtn.textContent = "Clear local";
+    uploadControls.appendChild(fileInput);
+    uploadControls.appendChild(label);
+    uploadControls.appendChild(clearBtn);
+    topRow.appendChild(uploadControls);
+
+    musclesBox.appendChild(topRow);
+
+    const muscleMedia = document.createElement("div");
+    muscleMedia.className = "media image";
+    const imgMuscle = document.createElement("img");
+    const local = localStorage.getItem(lsKey(group, slug));
+    imgMuscle.src = local || ex.muscleImage || "";
+    imgMuscle.alt = "Muscle targets";
+    imgMuscle.loading = "lazy";
+    muscleMedia.appendChild(imgMuscle);
+
+    const overlayHost = document.createElement("div");
+    overlayHost.style.position = "absolute";
+    overlayHost.style.inset = "0";
+    overlayHost.style.pointerEvents = "none";
+    muscleMedia.appendChild(overlayHost);
+    musclesBox.appendChild(muscleMedia);
+
+    const chipRow = document.createElement("div");
+    chipRow.className = "muscleChips";
+    musclesBox.appendChild(chipRow);
+
+    const legend = document.createElement("div");
+    legend.className = "legend";
+    const primaries = (ex.muscles?.primary||[]);
+    const secondaries = (ex.muscles?.secondary||[]);
+    if (primaries.length){ legend.appendChild(pill("Primary: " + primaries.join(", "))); }
+    if (secondaries.length){ legend.appendChild(pill("Secondary: " + secondaries.join(", "))); }
+    musclesBox.appendChild(legend);
+
+    const masks = (ex.muscles?.masks||[]).map(m=>({...m}));
+    function renderOverlays(host){
+      host.innerHTML = "";
+      masks.forEach(m=>{
+        if (!m.active) return;
+        const ov = document.createElement("div");
+        ov.className = "maskOverlay";
+        ov.style.setProperty("--mask-url", `url(${m.url})`);
+        host.appendChild(ov);
+      });
+    }
+    function renderChips(){
+      chipRow.innerHTML = "";
+      masks.forEach(m=>{
+        const c = document.createElement("span");
+        c.className = "mchip"+(m.active?" active":"");
+        c.textContent = m.name || "Mask";
+        c.onclick = ()=>{ m.active = !m.active; renderChips(); renderOverlays(overlayHost); };
+        chipRow.appendChild(c);
+      });
+    }
+    renderChips();
+    renderOverlays(overlayHost);
+
+    // Upload handlers (local only)
+    fileInput.onchange = (e)=>{
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{ localStorage.setItem(lsKey(group, slug), reader.result); }
+        catch(err){ alert("Image too large for local storage. Upload to your repo and set muscleImage to that path."); }
+        imgMuscle.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
+    clearBtn.onclick = ()=>{
+      localStorage.removeItem(lsKey(group, slug));
+      imgMuscle.src = ex.muscleImage || "";
+    };
+
+    // Make the muscle image zoomable with overlays mirrored
+    makeZoomable(muscleMedia, ()=>{
+      const activeMasks = masks.filter(m=>m.active).map(m=>m.url);
+      return { src: imgMuscle.src, alt: imgMuscle.alt, overlays: activeMasks, caption: "Target muscles" };
+    });
+
+    return musclesBox;
+  }
+
+  function renderAttachmentBox(ex){
+    const atts = ex.attachments || [];
+    const attBox = document.createElement("div");
+    attBox.className = "card";
+    const attHead = document.createElement("div");
+    attHead.className = "name";
+    attHead.textContent = "Attachments";
+    attBox.appendChild(attHead);
+
+    if (!atts.length){
+      const none = document.createElement("div");
+      none.className = "dim";
+      none.textContent = "No special attachment needed.";
+      attBox.appendChild(none);
+    } else {
+      const grid = document.createElement("div");
+      grid.className = "attachGrid";
+      const items = [];
+      atts.forEach(a=>{
+        const item = document.createElement("div");
+        item.className = "attachItem";
+        const thumb = document.createElement("div");
+        thumb.className = "attachThumb zoomable";
+        const im = document.createElement("img");
+        im.src = a.photo || "";
+        im.alt = a.name;
+        thumb.appendChild(im);
+        const label = document.createElement("div");
+        label.textContent = a.name;
+        item.appendChild(thumb);
+        item.appendChild(label);
+        grid.appendChild(item);
+        items.push({ src: im.src, alt: a.name, caption: a.name });
+      });
+      attBox.appendChild(grid);
+      makeGalleryZoomable(attBox, items);
+    }
+    return attBox;
+  }
+
+  function renderNotesBox(ex){
+    const notes = document.createElement("div");
+    notes.className = "notes";
+    notes.textContent = ex.notes || "No notes. Breathe, move well, don’t be reckless.";
+    return notes;
+  }
+
+  function renderExerciseView(group, slug){
     const list = (PLAN.groups[group]||[]).slice().sort(byOrder);
     const ex = list.find(e => (e.slug||slugify(e.name)) === slug);
     routerView.innerHTML = "";
@@ -554,10 +704,11 @@
     (ex.muscles?.secondary||[]).forEach(m=>{ const t=document.createElement("span"); t.className="tagS"; t.textContent=m; targets.appendChild(t); });
     section.appendChild(targets);
 
+    // Video + Machine
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "two-col";
 
-    // Video card
+    // Video card with header
     const videoBox = document.createElement("div");
     videoBox.className = "card";
     const vHead = document.createElement("div");
@@ -575,182 +726,33 @@
     video.appendChild(iframe);
     videoBox.appendChild(video);
 
-    // Machine card
-    const photoBox = document.createElement("div");
-    photoBox.className = "card";
+    // Machine card with header
+    const machineBox = document.createElement("div");
+    machineBox.className = "card";
     const pHead = document.createElement("div");
     pHead.className = "name";
     pHead.textContent = "Machine to use";
-    photoBox.appendChild(pHead);
-    const photo = document.createElement("div");
-    photo.className = "media image";
-    const img = document.createElement("img");
-    img.src = ex.photo || "";
-    img.alt = ex.name + " machine";
-    img.loading = "lazy";
-    photo.appendChild(img);
-    photoBox.appendChild(photo);
+    machineBox.appendChild(pHead);
+    const machineMedia = document.createElement("div");
+    machineMedia.className = "media image";
+    const imgMachine = document.createElement("img");
+    imgMachine.src = ex.machine || "";
+    imgMachine.alt = ex.name + " machine";
+    imgMachine.loading = "lazy";
+    machineMedia.appendChild(imgMachine);
+    machineBox.appendChild(machineMedia);
 
     mediaWrap.appendChild(videoBox);
-    mediaWrap.appendChild(photoBox);
+    mediaWrap.appendChild(machineBox);
     section.appendChild(mediaWrap);
 
-    // Zoomable photo as before
-    makeZoomable(photo, ()=>({ src: img.src, alt: img.alt, caption: "Machine to use" }));
+    // Zoomable machine
+    makeZoomable(machineMedia, ()=>({ src: imgMachine.src, alt: imgMachine.alt, caption: "Machine to use" }));
 
-    // Target muscles card (with overlays and upload)
-    const musclesBox = document.createElement("div");
-    musclesBox.className = "card";
-
-    const topRow = document.createElement("div");
-    topRow.style.display = "flex";
-    topRow.style.alignItems = "center";
-    topRow.style.justifyContent = "space-between";
-    const musclesTitle = document.createElement("div");
-    musclesTitle.className = "name";
-    musclesTitle.textContent = "Target muscles";
-    topRow.appendChild(musclesTitle);
-
-    const uploadControls = document.createElement("div");
-    uploadControls.className = "uploadRow";
-    const fileInput = document.createElement("input");
-    fileInput.type = "file"; fileInput.accept = "image/*"; fileInput.id = "file-"+group+"-"+slug;
-    const label = document.createElement("label");
-    label.className = "fileLabel"; label.setAttribute("for", fileInput.id);
-    label.textContent = "Upload muscle image (local)";
-    const clearBtn = document.createElement("button");
-    clearBtn.className = "btn sm"; clearBtn.textContent = "Clear local";
-    uploadControls.appendChild(fileInput);
-    uploadControls.appendChild(label);
-    uploadControls.appendChild(clearBtn);
-    topRow.appendChild(uploadControls);
-    
-    musclesBox.appendChild(topRow);
-
-    const muscleMedia = document.createElement("div");
-    muscleMedia.className = "media image";
-    const imgMuscle = document.createElement("img");
-    const local = localStorage.getItem(lsKey(group, slug));
-    imgMuscle.src = local || ex.muscleImage || "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Image";
-    imgMuscle.alt = "Muscle targets";
-    imgMuscle.loading = "lazy";
-    muscleMedia.appendChild(imgMuscle);
-
-    // overlays
-    const overlayHost = document.createElement("div");
-    overlayHost.style.position = "absolute";
-    overlayHost.style.inset = "0";
-    overlayHost.style.pointerEvents = "none";
-    muscleMedia.appendChild(overlayHost);
-
-    musclesBox.appendChild(muscleMedia);
-
-    const chipRow = document.createElement("div");
-    chipRow.className = "muscleChips";
-    musclesBox.appendChild(chipRow);
-
-    const legend = document.createElement("div");
-    legend.className = "legend";
-    const primaries = (ex.muscles?.primary||[]);
-    const secondaries = (ex.muscles?.secondary||[]);
-    if (primaries.length){ legend.appendChild(pill("Primary: " + primaries.join(", "))); }
-    if (secondaries.length){ legend.appendChild(pill("Secondary: " + secondaries.join(", "))); }
-    musclesBox.appendChild(legend);
-
-    const masks = (ex.muscles?.masks||[]).map(m=>({...m}));
-    function renderOverlays(host){
-      host.innerHTML = "";
-      masks.forEach(m=>{
-        if (!m.active) return;
-        const ov = document.createElement("div");
-        ov.className = "maskOverlay";
-        ov.style.setProperty("--mask-url", `url(${m.url})`);
-        host.appendChild(ov);
-      });
-    }
-    function renderChips(){
-      chipRow.innerHTML = "";
-      masks.forEach(m=>{
-        const c = document.createElement("span");
-        c.className = "mchip"+(m.active?" active":"");
-        c.textContent = m.name;
-        c.onclick = ()=>{ m.active = !m.active; renderChips(); renderOverlays(overlayHost); };
-        chipRow.appendChild(c);
-      });
-    }
-    renderChips();
-    renderOverlays(overlayHost);
-
-    // Upload handlers (local only)
-    fileInput.onchange = (e)=>{
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        try{ localStorage.setItem(lsKey(group, slug), reader.result); }
-        catch(err){ alert("Image too large for local storage. Upload to your repo and set muscleImage to that path."); }
-        imgMuscle.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    };
-    clearBtn.onclick = ()=>{
-      localStorage.removeItem(lsKey(group, slug));
-      imgMuscle.src = ex.muscleImage || "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Image";
-    };
-
-    // Make the muscle image zoomable with overlays mirrored
-    makeZoomable(muscleMedia, ()=>{
-      const activeMasks = masks.filter(m=>m.active).map(m=>m.url);
-      return { src: imgMuscle.src, alt: imgMuscle.alt, overlays: activeMasks, caption: "Target muscles" };
-    });
-
-    section.appendChild(musclesBox);
-
-    // Attachments
-    const atts = ex.attachments || [];
-    const attBox = document.createElement("div");
-    attBox.className = "card";
-    const attHead = document.createElement("div");
-    attHead.className = "name";
-    attHead.textContent = "Attachments";
-    attBox.appendChild(attHead);
-
-    if (!atts.length){
-      const none = document.createElement("div");
-      none.className = "dim";
-      none.textContent = "No special attachment needed.";
-      attBox.appendChild(none);
-    } else {
-      const grid = document.createElement("div");
-      grid.className = "attachGrid";
-      const items = [];
-      atts.forEach(a=>{
-        const item = document.createElement("div");
-        item.className = "attachItem";
-        const thumb = document.createElement("div");
-        thumb.className = "attachThumb zoomable";
-        const im = document.createElement("img");
-        im.src = a.photo || "https://via.placeholder.com/600x600?text=Attachment";
-        im.alt = a.name;
-        thumb.appendChild(im);
-        const label = document.createElement("div");
-        label.textContent = a.name;
-        item.appendChild(thumb);
-        item.appendChild(label);
-        grid.appendChild(item);
-        items.push({ src: im.src, alt: a.name, caption: a.name });
-      });
-      attBox.appendChild(grid);
-      // make all attachment thumbs a navigable gallery
-      makeGalleryZoomable(attBox, items);
-    }
-    section.appendChild(attBox);
-
-    // Notes
-    const notes = document.createElement("div");
-    notes.className = "notes";
-    notes.textContent = ex.notes || "No notes. Breathe, move well, don’t be reckless.";
-    section.appendChild(notes);
+    // Muscles, Attachments, Notes
+    section.appendChild(renderMuscleBox(group, slug, ex));
+    section.appendChild(renderAttachmentBox(ex));
+    section.appendChild(renderNotesBox(ex));
 
     routerView.appendChild(section);
   }
