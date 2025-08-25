@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Training Week</title>
+<title>Training Plan</title>
 <meta name="theme-color" content="#0f172a" />
 <style>
   :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; --ink-dark:#0a0f1e; }
@@ -12,12 +12,14 @@
   a { color: inherit; text-decoration: none; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
   header { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:8px 0 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(11,16,32,0.7); z-index:10; }
-  .title { font-weight:700; letter-spacing:.2px; display:flex; gap:10px; align-items:center; }
-  .title span { opacity:.7; font-weight:500; }
-  .toolbar { display:flex; gap:8px; align-items:center; }
+  .title { font-weight:700; letter-spacing:.2px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .title h1 { margin:0; }
+  .title small { opacity:.75; font-weight:500; }
+  .toolbar { display:flex; gap:12px; align-items:center; }
+  .clock { padding:8px 12px; border:1px solid var(--ring); border-radius:12px; font-variant-numeric: tabular-nums; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .btn { border:1px solid var(--ring); background:transparent; color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
   .btn:hover { border-color:#44506a; }
-  .days { display:grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap:8px; overflow:auto hidden; padding: 8px 0 2px; scrollbar-width:none; }
+  .groups { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; overflow:auto hidden; padding:8px 0 2px; scrollbar-width:none; }
   .chip { padding:10px 12px; border:1px solid var(--ring); border-radius:999px; text-align:center; white-space:nowrap; cursor:pointer; user-select:none; }
   .chip.active { background:var(--ink); color:var(--ink-dark); border-color:transparent; }
   .grid { display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:14px; margin-top:16px; }
@@ -29,12 +31,11 @@
   .meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:#cbd5e1; }
   .empty { opacity:.7; padding:24px; border:1px dashed var(--ring); border-radius:14px; text-align:center; }
   .foot { opacity:.6; font-size:12px; margin:18px 0 6px; text-align:center; }
-  .nav { margin-top:12px; display:flex; align-items:center; gap:10px; }
+  .nav { margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .link { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--ring); border-radius:12px; }
   .dim { color:var(--muted); }
   .detail { display:grid; gap:14px; margin-top:16px; }
   .detail h2 { margin:0; font-size:22px; }
-  .detail .media { aspect-ratio:16/9; }
   .detail .notes { border:1px solid var(--ring); border-radius:14px; padding:12px; color:#d1d5db; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .two-col { display:grid; gap:14px; grid-template-columns: 1fr; }
   @media (min-width: 850px){ .two-col { grid-template-columns: 1fr 1fr; } }
@@ -47,10 +48,11 @@
 <div class="wrap">
   <header>
     <div class="title">
-      <h1 style="margin:0;">Training Week</h1>
-      <span id="weekLabel"></span>
+      <h1>Training Plan</h1>
+      <small id="weekLabel"></small>
     </div>
     <div class="toolbar">
+      <div class="clock" id="clock">--/--/---- --:--:--</div>
       <button class="btn" id="shareBtn" title="Copy link to this plan">Share</button>
       <div class="qrbox" id="qrBox">
         <input id="urlInput" placeholder="Paste live URL to make QR" />
@@ -60,70 +62,61 @@
   </header>
 
   <div id="routerView"></div>
-  <div class="foot">Add to home screen for 1-tap access. Yes, like an app without the app store drama.</div>
+  <div class="foot">Add to home screen for 1-tap access. It behaves like an app without begging any app store for approval.</div>
 </div>
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
   const PLAN = {
-    weekLabel: "Back Day Edition",
-    days: {
-      Monday: [
-        {
-          name: "Lat Pulldown",
-          slug: "lat-pulldown",
-          order: 1,
-          sets: "4 × 10–12",
-          youtube: "https://www.youtube.com/watch?v=CAwf7n6Luuc",
-          photo: "https://via.placeholder.com/1280x720?text=Lat+Pulldown+Machine",
-          notes: "Grip slightly wider than shoulders, drive elbows down, stop at chin/upper chest, control the eccentric, no torso swinging."
-        },
-        {
-          name: "Seated Cable Row",
-          slug: "seated-cable-row",
-          order: 2,
-          sets: "4 × 10–12",
-          youtube: "https://www.youtube.com/watch?v=GZbfZ033f74",
-          photo: "https://via.placeholder.com/1280x720?text=Seated+Row+Machine",
-          notes: "Neutral spine, pull to lower ribs, squeeze shoulder blades, avoid shrugging, slow return."
-        },
-        {
-          name: "Chest-Supported Row",
-          slug: "chest-supported-row",
-          order: 3,
-          sets: "3 × 8–10",
-          youtube: "https://www.youtube.com/watch?v=8n0Qk8b7wEw",
-          photo: "https://via.placeholder.com/1280x720?text=Chest+Supported+Row",
-          notes: "Set bench ~30–45°, pull elbows along body line, pause briefly at peak contraction."
-        },
-        {
-          name: "Straight-Arm Pulldown",
-          slug: "straight-arm-pulldown",
-          order: 4,
-          sets: "3 × 12–15",
-          youtube: "https://www.youtube.com/watch?v=4vT4fzjkGCQ",
-          photo: "https://via.placeholder.com/1280x720?text=Straight+Arm+Pulldown",
-          notes: "Arms mostly straight with soft elbows, pull bar in an arc to thighs, feel lats doing the work, ribs down."
-        }
+    label: "Grouped by Muscle",
+    groups: {
+      Back: [
+        { name: "Lat Pulldown", slug: "lat-pulldown", order: 1, sets: "4 × 10–12", youtube: "https://www.youtube.com/watch?v=CAwf7n6Luuc", photo: "https://via.placeholder.com/1280x720?text=Lat+Pulldown+Machine", notes: "Grip just wider than shoulders, elbows drive down, touch upper chest, slow eccentric, no torso swing." },
+        { name: "Seated Cable Row", slug: "seated-cable-row", order: 2, sets: "4 × 10–12", youtube: "https://www.youtube.com/watch?v=GZbfZ033f74", photo: "https://via.placeholder.com/1280x720?text=Seated+Row+Machine", notes: "Neutral spine, pull to lower ribs, squeeze shoulder blades together, avoid shrugging." },
+        { name: "Chest-Supported Row", slug: "chest-supported-row", order: 3, sets: "3 × 8–10", youtube: "https://www.youtube.com/watch?v=8n0Qk8b7wEw", photo: "https://via.placeholder.com/1280x720?text=Chest+Supported+Row", notes: "Bench 30–45°, pull elbows along body, brief pause at top, keep ribs down." },
+        { name: "Straight-Arm Pulldown", slug: "straight-arm-pulldown", order: 4, sets: "3 × 12–15", youtube: "https://www.youtube.com/watch?v=4vT4fzjkGCQ", photo: "https://via.placeholder.com/1280x720?text=Straight+Arm+Pulldown", notes: "Arms mostly straight, pull in an arc to thighs, lats initiate, no rib flaring." }
       ],
-      Tuesday: [],
-      Wednesday: [],
-      Thursday: [],
-      Friday: [],
-      Saturday: [],
-      Sunday: []
+      Chest: [
+        { name: "Chest Press Machine", slug: "chest-press", order: 1, sets: "4 × 8–12", youtube: "https://www.youtube.com/watch?v=2tKXW4J9xCc", photo: "https://via.placeholder.com/1280x720?text=Chest+Press+Machine", notes: "Shoulders packed, slow down phase, full lockout optional, keep feet planted." },
+        { name: "Incline Dumbbell Press", slug: "incline-db-press", order: 2, sets: "3 × 8–10", youtube: "https://www.youtube.com/watch?v=8iPEnn-ltC8", photo: "https://via.placeholder.com/1280x720?text=Incline+Bench", notes: "30° incline, wrists stacked, slight pause at chest, no bouncing." }
+      ],
+      Shoulders: [
+        { name: "Seated Shoulder Press", slug: "seated-shoulder-press", order: 1, sets: "4 × 8–10", youtube: "https://www.youtube.com/watch?v=qEwKCR5JCog", photo: "https://via.placeholder.com/1280x720?text=Shoulder+Press+Machine", notes: "No lower back arch, control tempo, finish with biceps by ears." },
+        { name: "Lateral Raise Machine", slug: "lateral-raise", order: 2, sets: "3 × 12–15", youtube: "https://www.youtube.com/watch?v=3VcKaXpzqRo", photo: "https://via.placeholder.com/1280x720?text=Lateral+Raise+Machine", notes: "Soft elbows, lift to shoulder height, lead with elbows, no shrugging." }
+      ],
+      Legs: [
+        { name: "Leg Press", slug: "leg-press", order: 1, sets: "4 × 10–12", youtube: "https://www.youtube.com/watch?v=IZxyjW7MPJQ", photo: "https://via.placeholder.com/1280x720?text=Leg+Press+Machine", notes: "Foot width shoulder distance, descend until thighs are near chest without pelvis tuck, don’t lock knees hard." },
+        { name: "Seated Leg Curl", slug: "seated-leg-curl", order: 2, sets: "3 × 12–15", youtube: "https://www.youtube.com/watch?v=1Tq3QdYUuHs", photo: "https://via.placeholder.com/1280x720?text=Leg+Curl+Machine", notes: "Pad above ankles, hips back, squeeze at bottom, slow return." },
+        { name: "Calf Raise", slug: "calf-raise", order: 3, sets: "4 × 12–15", youtube: "https://www.youtube.com/watch?v=YMmgqO8Jo-k", photo: "https://via.placeholder.com/1280x720?text=Calf+Raise+Machine", notes: "Full stretch, pause at top, keep knees soft." }
+      ]
     }
   };
   // ---------- STOP EDITING HERE ----------
 
-  const daysOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const GROUP_ORDER = ["Back","Chest","Shoulders","Legs"];
   const routerView = document.getElementById("routerView");
   const weekLabel = document.getElementById("weekLabel");
   const shareBtn = document.getElementById("shareBtn");
   const qrBox = document.getElementById("qrBox");
   const urlInput = document.getElementById("urlInput");
   const qrImg = document.getElementById("qrImg");
-  weekLabel.textContent = PLAN.weekLabel || "";
+  const clockEl = document.getElementById("clock");
+
+  weekLabel.textContent = PLAN.label || "";
+
+  // Clock with EU format dd/mm/yyyy HH:MM:SS
+  function two(n){ return String(n).padStart(2,"0"); }
+  function formatEU(d){
+    const day = two(d.getDate());
+    const mon = two(d.getMonth()+1);
+    const yr = d.getFullYear();
+    const hr = two(d.getHours());
+    const min = two(d.getMinutes());
+    const sec = two(d.getSeconds());
+    return `${day}/${mon}/${yr} ${hr}:${min}:${sec}`;
+  }
+  function tick(){ clockEl.textContent = formatEU(new Date()); }
+  tick(); setInterval(tick, 1000);
 
   function isYouTube(u){ return /youtu\.be|youtube\.com/.test(u||""); }
   function toYouTubeEmbed(u){
@@ -137,47 +130,50 @@
     return u;
   }
 
-  function currentWeekday(){
-    const d = new Date().toLocaleDateString(undefined,{weekday:"long"});
-    return daysOrder.includes(d) ? d : "Monday";
+  function slugify(s){
+    return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
   }
-
   function navTo(hash){ location.hash = hash; }
   function byOrder(a,b){ return (a.order||999) - (b.order||999); }
 
-  function renderDaysView(day){
-    const list = PLAN.days[day] || [];
-    routerView.innerHTML = "";
-    const daysBar = document.createElement("div");
-    daysBar.className = "days";
-    daysOrder.forEach(d=>{
+  function renderGroupsBar(active){
+    const bar = document.createElement("div");
+    bar.className = "groups";
+    GROUP_ORDER.forEach(g=>{
       const chip = document.createElement("div");
-      chip.className = "chip"+(d===day?" active":"");
-      chip.textContent = d;
-      chip.onclick = ()=> navTo(`#/day/${d}`);
-      daysBar.appendChild(chip);
+      chip.className = "chip"+(g===active?" active":"");
+      chip.textContent = g;
+      chip.onclick = ()=> navTo(`#/group/${encodeURIComponent(g)}`);
+      bar.appendChild(chip);
     });
-    routerView.appendChild(daysBar);
+    return bar;
+  }
+
+  function renderGroupView(group){
+    const list = (PLAN.groups[group]||[]).slice().sort(byOrder);
+    routerView.innerHTML = "";
+    routerView.appendChild(renderGroupsBar(group));
 
     const head = document.createElement("div");
     head.className = "nav";
-    head.innerHTML = `<span class="dim">Showing</span> <strong>${day}</strong>`;
+    head.innerHTML = `<span class="dim">Showing</span> <strong>${group}</strong>`;
     routerView.appendChild(head);
 
     if (!list.length){
       const empty = document.createElement("div");
       empty.className = "empty";
-      empty.textContent = "No exercises here yet. Truly the dream.";
+      empty.textContent = "Empty. Either intentional recovery or accidental procrastination.";
       routerView.appendChild(empty);
       return;
     }
 
     const grid = document.createElement("div");
     grid.className = "grid";
-    list.slice().sort(byOrder).forEach(ex=>{
+    list.forEach(ex=>{
       const card = document.createElement("div");
       card.className = "card";
       card.style.cursor = "pointer";
+
       const row = document.createElement("div");
       row.style.display="flex"; row.style.alignItems="center"; row.style.justifyContent="space-between";
       const name = document.createElement("div");
@@ -194,29 +190,31 @@
       meta.textContent = "Tap to open details";
       card.appendChild(meta);
 
-      card.onclick = ()=> navTo(`#/exercise/${encodeURIComponent(day)}/${encodeURIComponent(ex.slug||slugify(ex.name))}`);
+      card.onclick = ()=> navTo(`#/exercise/${encodeURIComponent(group)}/${encodeURIComponent(ex.slug||slugify(ex.name))}`);
       grid.appendChild(card);
     });
     routerView.appendChild(grid);
   }
 
-  function renderExerciseView(day, slug){
-    const list = PLAN.days[day] || [];
+  function renderExerciseView(group, slug){
+    const list = (PLAN.groups[group]||[]).slice().sort(byOrder);
     const ex = list.find(e => (e.slug||slugify(e.name)) === slug);
     routerView.innerHTML = "";
+    routerView.appendChild(renderGroupsBar(group));
+
     const back = document.createElement("div");
     back.className = "nav";
     const backLink = document.createElement("a");
     backLink.className = "link";
-    backLink.href = `#/day/${encodeURIComponent(day)}`;
-    backLink.textContent = "← Back to " + day;
+    backLink.href = `#/group/${encodeURIComponent(group)}`;
+    backLink.textContent = "← Back to " + group;
     back.appendChild(backLink);
     routerView.appendChild(back);
 
     if (!ex){
       const empty = document.createElement("div");
       empty.className = "empty";
-      empty.textContent = "Exercise not found. Either the plan changed or the universe is messing with you.";
+      empty.textContent = "Exercise not found. Either it was renamed or abducted by bad form.";
       routerView.appendChild(empty);
       return;
     }
@@ -287,25 +285,22 @@
     routerView.appendChild(section);
   }
 
-  function slugify(s){
-    return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
-  }
-
   function router(){
     const hash = location.hash || "";
     const parts = hash.split("/").map(x=>decodeURIComponent(x.replace(/^#*/, "")));
     if (parts[1] === "exercise" && parts.length >= 4){
-      const day = parts[2] || currentWeekday();
+      const group = parts[2];
       const slug = parts[3];
-      renderExerciseView(day, slug);
+      renderExerciseView(group, slug);
     } else {
-      const day = (parts[1] === "day" && parts[2]) ? parts[2] : currentWeekday();
-      renderDaysView(day);
+      const group = (parts[1] === "group" && parts[2]) ? parts[2] : GROUP_ORDER[0];
+      renderGroupView(group);
     }
   }
   window.addEventListener("hashchange", router);
   router();
 
+  // Share + QR helper
   shareBtn.addEventListener("click", async ()=> {
     const url = location.href;
     try{
