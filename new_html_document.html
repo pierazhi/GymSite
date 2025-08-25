@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Training Week</title>
+<meta name="theme-color" content="#0f172a" />
+<style>
+  :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:linear-gradient(180deg,#0b1020, #0e1326 30%, #0b1020); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
+  header { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:8px 0 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(11,16,32,0.7); z-index:10; }
+  .title { font-weight:700; letter-spacing:.2px; display:flex; gap:10px; align-items:center; }
+  .title span { opacity:.7; font-weight:500; }
+  .toolbar { display:flex; gap:8px; align-items:center; }
+  .btn { border:1px solid var(--ring); background:transparent; color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
+  .btn:hover { border-color:#44506a; }
+  .days { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px; overflow:auto hidden; padding: 8px 0 2px; scrollbar-width:none; }
+  .chip { padding:10px 12px; border:1px solid var(--ring); border-radius:999px; text-align:center; white-space:nowrap; cursor:pointer; user-select:none; }
+  .chip.active { background:var(--ink); color:#0a0f1e; border-color:transparent; }
+  .grid { display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:14px; margin-top:16px; }
+  .card { border:1px solid var(--ring); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:140px; }
+  .media { position:relative; border-radius:12px; overflow:hidden; background:#0f152b; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; border:1px solid #1f2942; }
+  .media img, .media video, .media iframe { width:100%; height:100%; object-fit:cover; display:block; }
+  .badge { font-size:12px; color:#0a0f1e; background:var(--accent); border-radius:999px; padding:4px 8px; font-weight:700; width:fit-content; }
+  .name { font-weight:700; font-size:18px; letter-spacing:.2px; }
+  .desc { color:var(--muted); line-height:1.4; }
+  .meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .meta span { border:1px solid var(--ring); border-radius:999px; padding:4px 10px; font-size:12px; color:#cbd5e1; }
+  .dayhead { margin-top:12px; font-weight:700; opacity:.9; }
+  .empty { opacity:.7; padding:24px; border:1px dashed var(--ring); border-radius:14px; text-align:center; }
+  .foot { opacity:.6; font-size:12px; margin:18px 0 6px; text-align:center; }
+  .qrbox { display:none; align-items:center; gap:10px; margin-left:8px; }
+  .qrbox input { width:260px; background:transparent; border:1px solid var(--ring); border-radius:10px; padding:10px; color:var(--ink); outline:none; }
+  .qrbox img { width:64px; height:64px; border-radius:8px; border:1px solid var(--ring); background:#0f152b; }
+  @media (max-width:560px){ .title h1 { font-size:18px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1 style="margin:0;">Training Week</h1>
+      <span id="weekLabel"></span>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="shareBtn" title="Copy link to this plan">Share</button>
+      <div class="qrbox" id="qrBox">
+        <input id="urlInput" placeholder="Paste live URL to make QR" />
+        <img id="qrImg" alt="QR code"/>
+      </div>
+    </div>
+  </header>
+
+  <div class="days" id="days"></div>
+  <div class="dayhead" id="dayHead"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none;">No exercises for this day. Maybe “rest” isn’t a crime after all.</div>
+  <div class="foot">Tip: add this page to the phone’s home screen for 1-tap access.</div>
+</div>
+
+<script>
+  // ---------- EDIT ONLY THIS DATA BLOCK ----------
+  const PLAN = {
+    weekLabel: "Week of 1–7 Sep 2025",
+    days: {
+      Monday: [
+        { name: "Squat", sets: "4 × 8", rest: "90 s", notes: "Tempo 3-1-X. Keep chest up.", media: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Squats.jpg" },
+        { name: "Walking Lunges", sets: "3 × 12/leg", rest: "60 s", notes: "Short stride for quads.", media: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4" },
+        { name: "Plank", sets: "3 × 45 s", rest: "45 s", notes: "Squeeze glutes.", media: "" }
+      ],
+      Tuesday: [
+        { name: "Incline Push-ups", sets: "4 × 12", rest: "60 s", notes: "Full range.", media: "https://www.youtube.com/watch?v=IODxDxX7oi4" },
+        { name: "Band Row", sets: "4 × 15", rest: "60 s", notes: "Elbows low.", media: "" },
+        { name: "Dead Bug", sets: "3 × 10/side", rest: "45 s", notes: "Ribs down.", media: "" }
+      ],
+      Wednesday: [
+        { name: "Bike Easy", sets: "25–30 min", rest: "", notes: "Z2 conversational pace.", media: "" }
+      ],
+      Thursday: [
+        { name: "Romanian Deadlift", sets: "4 × 10", rest: "90 s", notes: "Hips back, neutral neck.", media: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Deadlift.jpg" },
+        { name: "Step-ups", sets: "3 × 10/leg", rest: "60 s", notes: "Knee tracks toes.", media: "" },
+        { name: "Side Plank", sets: "3 × 30 s/side", rest: "45 s", notes: "", media: "" }
+      ],
+      Friday: [
+        { name: "Shoulder PT (Y-T-W)", sets: "3 × 12 each", rest: "45 s", notes: "Light band.", media: "" },
+        { name: "Farmer Carry", sets: "4 × 30 m", rest: "60 s", notes: "Tall posture.", media: "" }
+      ],
+      Saturday: [],
+      Sunday: [
+        { name: "Stretching", sets: "20 min", rest: "", notes: "Hips, hamstrings, T-spine.", media: "" }
+      ]
+    }
+  };
+  // ---------- STOP EDITING HERE ----------
+
+  const daysOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const daysEl = document.getElementById("days");
+  const gridEl = document.getElementById("grid");
+  const headEl = document.getElementById("dayHead");
+  const emptyEl = document.getElementById("empty");
+  const weekLabel = document.getElementById("weekLabel");
+  const shareBtn = document.getElementById("shareBtn");
+  const qrBox = document.getElementById("qrBox");
+  const urlInput = document.getElementById("urlInput");
+  const qrImg = document.getElementById("qrImg");
+
+  weekLabel.textContent = PLAN.weekLabel || "";
+  let currentDay = new Date().toLocaleDateString(undefined,{weekday:"long"});
+  if (!daysOrder.includes(currentDay)) currentDay = "Monday";
+
+  function isYouTube(u){ return /youtu\.be|youtube\.com/.test(u||""); }
+  function toYouTubeEmbed(u){
+    try{
+      const url=new URL(u);
+      if(url.hostname==="youtu.be"){ return "https://www.youtube.com/embed/"+url.pathname.slice(1); }
+      const id = url.searchParams.get("v");
+      if(id) return "https://www.youtube.com/embed/"+id;
+      if(url.pathname.startsWith("/shorts/")) return "https://www.youtube.com/embed/"+url.pathname.split("/")[2];
+    }catch(e){}
+    return u;
+  }
+  function isVideo(u){ return /\.(mp4|webm|ogg)(\?|$)/i.test(u||""); }
+  function isImage(u){ return /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(u||""); }
+
+  function renderDays(){
+    daysEl.innerHTML = "";
+    daysOrder.forEach(d=>{
+      const btn = document.createElement("div");
+      btn.className = "chip"+(d===currentDay?" active":"");
+      btn.textContent = d;
+      btn.onclick = ()=>{ currentDay = d; renderDays(); renderDay(); };
+      daysEl.appendChild(btn);
+    });
+  }
+
+  function renderDay(){
+    headEl.textContent = currentDay;
+    gridEl.innerHTML = "";
+    const list = PLAN.days[currentDay] || [];
+    emptyEl.style.display = list.length ? "none" : "block";
+    list.forEach(ex=>{
+      const card = document.createElement("div");
+      card.className = "card";
+
+      if (ex.media){
+        const media = document.createElement("div");
+        media.className = "media";
+        if (isYouTube(ex.media)){
+          const iframe = document.createElement("iframe");
+          iframe.src = toYouTubeEmbed(ex.media);
+          iframe.title = ex.name;
+          iframe.loading = "lazy";
+          iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+          iframe.referrerPolicy = "strict-origin-when-cross-origin";
+          media.appendChild(iframe);
+        } else if (isVideo(ex.media)) {
+          const vid = document.createElement("video");
+          vid.src = ex.media;
+          vid.controls = true;
+          vid.preload = "none";
+          media.appendChild(vid);
+        } else if (isImage(ex.media)) {
+          const img = document.createElement("img");
+          img.src = ex.media;
+          img.loading = "lazy";
+          img.alt = ex.name;
+          media.appendChild(img);
+        } else {
+          const link = document.createElement("a");
+          link.href = ex.media;
+          link.textContent = "Open media";
+          link.target = "_blank";
+          media.appendChild(link);
+        }
+        card.appendChild(media);
+      }
+
+      const row = document.createElement("div");
+      row.style.display="flex"; row.style.alignItems="center"; row.style.justifyContent="space-between";
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = ex.name || "Exercise";
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.textContent = ex.sets || "";
+      row.appendChild(name); row.appendChild(badge);
+      card.appendChild(row);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      if (ex.rest) { const s=document.createElement("span"); s.textContent = `Rest ${ex.rest}`; meta.appendChild(s); }
+      if (ex.tempo) { const s=document.createElement("span"); s.textContent = `Tempo ${ex.tempo}`; meta.appendChild(s); }
+      card.appendChild(meta);
+
+      if (ex.notes){
+        const desc = document.createElement("div");
+        desc.className = "desc";
+        desc.textContent = ex.notes;
+        card.appendChild(desc);
+      }
+
+      gridEl.appendChild(card);
+    });
+  }
+
+  renderDays();
+  renderDay();
+
+  shareBtn.addEventListener("click", async ()=> {
+    const url = location.href;
+    try{
+      await navigator.clipboard.writeText(url);
+      shareBtn.textContent = "Link copied";
+      setTimeout(()=>shareBtn.textContent="Share",1400);
+    }catch(e){
+      if (navigator.share) {
+        try { await navigator.share({ title: document.title, url }); } catch(_) {}
+      } else {
+        alert(url);
+      }
+    }
+    qrBox.style.display = "flex";
+    urlInput.value = url;
+    updateQR();
+  });
+
+  function updateQR(){
+    const u = encodeURIComponent((urlInput.value||"").trim());
+    if (!u){ qrImg.src=""; return; }
+    // Using Google Chart's QR on-the-fly. Replace later if you want a local generator.
+    qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=M|0&chl=${u}`;
+  }
+  urlInput.addEventListener("input", updateQR);
+</script>
+</body>
+</html>
