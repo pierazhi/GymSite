@@ -108,7 +108,7 @@
   </header>
 
   <div id="routerView"></div>
-  <div class="foot">Click any image to view full screen. Use consistent file names: machine.jpg, muscles.png, attach1.jpg.</div>
+  <div class="foot">Click any image to view full screen. Use consistent file names: machine.jpg, muscles.png, handle.jpg.</div>
 </div>
 
 <!-- Lightbox -->
@@ -124,7 +124,7 @@
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
-  // Put images in your repo using: Image/<ExerciseFolder>/{machine.jpg,muscles.png,attach1.jpg,...}
+  // Put images in your repo using: Image/<ExerciseFolder>/{machine.jpg,muscles.png,handle.jpg,...}
   const PLAN = {
     label: "Grouped by Muscle",
     groups: {
@@ -139,10 +139,10 @@
         },
         { name: "Lat Pulldown (MAG Grip)", slug: "lat-mag", order: 2, sets: "3 × 8",
           youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
-          machine: "Image/LatPulldownMagGrip/machine.jpg",
+          machine: "Image/LatPulldownMagGrip/machine.png",
           muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Biceps"], masks: [] },
-          muscleImage: "Image/LatPulldownMagGrip/muscles.png",
-          attachments: [{ name: "MAG neutral/wide", photo: "Image/LatPulldownMagGrip/attach1.jpg" }],
+          muscleImage: "Image/LatPulldownMagGrip/muscles.jpg",
+          attachments: [{ name: "MAG neutral/wide", photo: "Image/LatPulldownMagGrip/handle.jpg" }],
           notes: "Elbows drive to ribs, torso still, full stretch at top."
         },
         { name: "Lat Pulldown (Wide Grip)", slug: "lat-wide", order: 3, sets: "3 × 8",
@@ -150,7 +150,7 @@
           machine: "Image/LatPulldownWideGrip/machine.jpg",
           muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Mid traps"], masks: [] },
           muscleImage: "Image/LatPulldownWideGrip/muscles.png",
-          attachments: [{ name: "Wide lat bar", photo: "Image/LatPulldownWideGrip/attach1.jpg" }],
+          attachments: [{ name: "Wide lat bar", photo: "Image/LatPulldownWideGrip/handle.jpg" }],
           notes: "Grip wider than shoulders, chest up, pull to upper chest."
         },
         { name: "Rear Delts", slug: "rear-delts-back", order: 4, sets: "3 × 12",
@@ -158,7 +158,7 @@
           machine: "Image/RearDeltsBack/machine.jpg",
           muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
           muscleImage: "Image/RearDeltsBack/muscles.png",
-          attachments: [{ name: "Rear-delt machine", photo: "Image/RearDeltsBack/attach1.jpg" }],
+          attachments: [{ name: "Rear-delt machine", photo: "Image/RearDeltsBack/handle.jpg" }],
           notes: "Lead with elbows, no shrug, slight pause at peak."
         },
         { name: "Dumbbell Curl", slug: "dumbbell-curl", order: 5, sets: "3 × 10",
@@ -166,7 +166,7 @@
           machine: "Image/DumbbellCurl/machine.jpg",
           muscles: { primary: ["Biceps brachii"], secondary: ["Brachialis"], masks: [] },
           muscleImage: "Image/DumbbellCurl/muscles.png",
-          attachments: [{ name: "Dumbbells", photo: "Image/DumbbellCurl/attach1.jpg" }],
+          attachments: [{ name: "Dumbbells", photo: "Image/DumbbellCurl/handle.jpg" }],
           notes: "Wrists neutral, shoulders quiet, control the eccentric."
         },
         { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-back", order: 6, sets: "3 × 12",
@@ -174,7 +174,7 @@
           machine: "Image/LateralRaiseCableBack/machine.jpg",
           muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
           muscleImage: "Image/LateralRaiseCableBack/muscles.png",
-          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableBack/attach1.jpg" }],
+          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableBack/handle.jpg" }],
           notes: "Soft elbows, raise to shoulder height, avoid shrugging."
         },
         { name: "Leg Raises", slug: "leg-raises-back", order: 7, sets: "3 × 15",
@@ -182,7 +182,7 @@
           machine: "Image/LegRaisesBack/machine.jpg",
           muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
           muscleImage: "Image/LegRaisesBack/muscles.png",
-          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesBack/attach1.jpg" }],
+          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesBack/handle.jpg" }],
           notes: "Posterior tilt, slow lower, no swinging."
         }
       ],
@@ -200,7 +200,7 @@
           machine: "Image/ShoulderPress/machine.jpg",
           muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
           muscleImage: "Image/ShoulderPress/muscles.png",
-          attachments: [{ name: "Bench + dumbbells/bar", photo: "Image/ShoulderPress/attach1.jpg" }],
+          attachments: [{ name: "Bench + dumbbells/bar", photo: "Image/ShoulderPress/handle.jpg" }],
           notes: "Ribs down, no over-arch, finish with biceps by ears."
         },
         { name: "Lateral Raise", slug: "lateral-raise", order: 3, sets: "3 × 12",
@@ -208,7 +208,7 @@
           machine: "Image/LateralRaise/machine.jpg",
           muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
           muscleImage: "Image/LateralRaise/muscles.png",
-          attachments: [{ name: "Dumbbells", photo: "Image/LateralRaise/attach1.jpg" }],
+          attachments: [{ name: "Dumbbells", photo: "Image/LateralRaise/handle.jpg" }],
           notes: "Lead with elbows, slight torso lean OK, controlled tempo."
         },
         { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-shoulder", order: 4, sets: "3 × 12",
@@ -216,7 +216,7 @@
           machine: "Image/LateralRaiseCableShoulder/machine.jpg",
           muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
           muscleImage: "Image/LateralRaiseCableShoulder/muscles.png",
-          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableShoulder/attach1.jpg" }],
+          attachments: [{ name: "Single D-handle", photo: "Image/LateralRaiseCableShoulder/handle.jpg" }],
           notes: "Cable behind body, raise to about 90°, no shrug."
         },
         { name: "Machine Shoulder Press", slug: "machine-shoulder-press", order: 5, sets: "3 × 8",
@@ -224,7 +224,7 @@
           machine: "Image/MachineShoulderPress/machine.jpg",
           muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
           muscleImage: "Image/MachineShoulderPress/muscles.png",
-          attachments: [{ name: "Machine handles", photo: "Image/MachineShoulderPress/attach1.jpg" }],
+          attachments: [{ name: "Machine handles", photo: "Image/MachineShoulderPress/handle.jpg" }],
           notes: "Seat height so handles start at jaw-chin level. Smooth reps."
         },
         { name: "Zottman Curl", slug: "zottman-curl", order: 6, sets: "3 × 10",
@@ -232,7 +232,7 @@
           machine: "Image/ZottmanCurl/machine.jpg",
           muscles: { primary: ["Biceps brachii","Brachioradialis"], secondary: ["Forearms"], masks: [] },
           muscleImage: "Image/ZottmanCurl/muscles.png",
-          attachments: [{ name: "Dumbbells", photo: "Image/ZottmanCurl/attach1.jpg" }],
+          attachments: [{ name: "Dumbbells", photo: "Image/ZottmanCurl/handle.jpg" }],
           notes: "Supinated up, pronated down. Control the rotation."
         },
         { name: "Triceps Rope", slug: "triceps-rope", order: 7, sets: "3 × 12",
@@ -240,7 +240,7 @@
           machine: "Image/TricepsRope/machine.jpg",
           muscles: { primary: ["Triceps"], secondary: [], masks: [] },
           muscleImage: "Image/TricepsRope/muscles.png",
-          attachments: [{ name: "Rope", photo: "Image/TricepsRope/attach1.jpg" }],
+          attachments: [{ name: "Rope", photo: "Image/TricepsRope/handle.jpg" }],
           notes: "Elbows pinned, spread rope at the bottom, full lockout."
         },
         { name: "Leg Raises", slug: "leg-raises-shoulder", order: 8, sets: "3 × 15",
@@ -248,7 +248,7 @@
           machine: "Image/LegRaisesShoulder/machine.jpg",
           muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
           muscleImage: "Image/LegRaisesShoulder/muscles.png",
-          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesShoulder/attach1.jpg" }],
+          attachments: [{ name: "Captain’s chair", photo: "Image/LegRaisesShoulder/handle.jpg" }],
           notes: "Posterior tilt, slow eccentric, no momentum."
         }
       ],
@@ -266,7 +266,7 @@
           machine: "Image/ChestPressDumbbell/machine.jpg",
           muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
           muscleImage: "Image/ChestPressDumbbell/muscles.png",
-          attachments: [{ name: "Flat bench + dumbbells", photo: "Image/ChestPressDumbbell/attach1.jpg" }],
+          attachments: [{ name: "Flat bench + dumbbells", photo: "Image/ChestPressDumbbell/handle.jpg" }],
           notes: "Wrists stacked, slight arch, control the touch on chest."
         },
         { name: "Chest Press (Machine)", slug: "chest-press-machine", order: 3, sets: "3 × 8",
@@ -274,7 +274,7 @@
           machine: "Image/ChestPressMachine/machine.jpg",
           muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
           muscleImage: "Image/ChestPressMachine/muscles.png",
-          attachments: [{ name: "Machine handles", photo: "Image/ChestPressMachine/attach1.jpg" }],
+          attachments: [{ name: "Machine handles", photo: "Image/ChestPressMachine/handle.jpg" }],
           notes: "Seat so handles align mid-chest; steady tempo."
         },
         { name: "Chest Fly", slug: "chest-fly", order: 4, sets: "3 × 10",
@@ -282,7 +282,7 @@
           machine: "Image/ChestFly/machine.jpg",
           muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts"], masks: [] },
           muscleImage: "Image/ChestFly/muscles.png",
-          attachments: [{ name: "Pec deck or cables", photo: "Image/ChestFly/attach1.jpg" }],
+          attachments: [{ name: "Pec deck or cables", photo: "Image/ChestFly/handle.jpg" }],
           notes: "Soft elbows, big stretch, squeeze at midline."
         },
         { name: "Chest Machine", slug: "chest-machine", order: 5, sets: "3 × 8",
@@ -290,7 +290,7 @@
           machine: "Image/ChestMachine/machine.jpg",
           muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
           muscleImage: "Image/ChestMachine/muscles.png",
-          attachments: [{ name: "Machine handles", photo: "Image/ChestMachine/attach1.jpg" }],
+          attachments: [{ name: "Machine handles", photo: "Image/ChestMachine/handle.jpg" }],
           notes: "Scapulae retracted, no bouncing, full range."
         },
         { name: "Skullcrushers", slug: "skullcrushers", order: 6, sets: "3 × 10",
@@ -298,7 +298,7 @@
           machine: "Image/Skullcrushers/machine.jpg",
           muscles: { primary: ["Triceps (long head)"], secondary: [], masks: [] },
           muscleImage: "Image/Skullcrushers/muscles.png",
-          attachments: [{ name: "EZ-bar or dumbbells", photo: "Image/Skullcrushers/attach1.jpg" }],
+          attachments: [{ name: "EZ-bar or dumbbells", photo: "Image/Skullcrushers/handle.jpg" }],
           notes: "Upper arms stable, lower to behind head for stretch."
         },
         { name: "Rear Delts", slug: "rear-delts-chest", order: 7, sets: "3 × 12",
@@ -306,7 +306,7 @@
           machine: "Image/RearDeltsChest/machine.jpg",
           muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
           muscleImage: "Image/RearDeltsChest/muscles.png",
-          attachments: [{ name: "Reverse pec deck or cables", photo: "Image/RearDeltsChest/attach1.jpg" }],
+          attachments: [{ name: "Reverse pec deck or cables", photo: "Image/RearDeltsChest/handle.jpg" }],
           notes: "Control the last 30°; no momentum, no shrug."
         },
         { name: "Leg Raises", slug: "leg-raises-chest", order: 8, sets: "3 × 15",
@@ -314,7 +314,7 @@
           machine: "Image/LegRaisesChest/machine.jpg",
           muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
           muscleImage: "Image/LegRaisesChest/muscles.png",
-          attachments: [{ name: "Captain’s chair or bar", photo: "Image/LegRaisesChest/attach1.jpg" }],
+          attachments: [{ name: "Captain’s chair or bar", photo: "Image/LegRaisesChest/handle.jpg" }],
           notes: "Posterior tilt, heels together, slow lower."
         }
       ],
