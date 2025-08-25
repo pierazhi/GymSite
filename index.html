@@ -10,7 +10,7 @@
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:linear-gradient(180deg,#0b1020, #0e1326 30%, #0b1020); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
   a { color: inherit; text-decoration: none; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px; }
   header { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:8px 0 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(11,16,32,0.7); z-index:10; }
   .title { font-weight:700; letter-spacing:.2px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
   .title h1 { margin:0; }
@@ -19,13 +19,19 @@
   .clock { padding:8px 12px; border:1px solid var(--ring); border-radius:12px; font-variant-numeric: tabular-nums; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .btn { border:1px solid var(--ring); background:transparent; color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
   .btn:hover { border-color:#44506a; }
+  .btn.sm { padding:6px 10px; font-size:12px; }
   .groups { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; overflow:auto hidden; padding:8px 0 2px; scrollbar-width:none; }
   .chip { padding:10px 12px; border:1px solid var(--ring); border-radius:999px; text-align:center; white-space:nowrap; cursor:pointer; user-select:none; }
   .chip.active { background:var(--ink); color:var(--ink-dark); border-color:transparent; }
   .grid { display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:14px; margin-top:16px; }
   .card { border:1px solid var(--ring); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:140px; transition: transform .08s ease, border-color .15s ease; }
   .card:hover { transform: translateY(-2px); border-color:#44506a; }
-  .media { position:relative; border-radius:12px; overflow:hidden; background:#0f152b; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; border:1px solid #1f2942; }
+  .media { position:relative; border-radius:12px; overflow:hidden; background:#0f152b; display:flex; align-items:center; justify-content:center; border:1px solid #1f2942; }
+  .media.image { aspect-ratio:4/3; }   /* clearer thumbnails for photos */
+  .media.video { aspect-ratio:16/9; }  /* proper for YouTube */
+  .media img, .media iframe { width:100%; height:100%; object-fit:cover; display:block; }
+  .clickhint{ position:absolute; bottom:6px; right:8px; font-size:11px; color:#cbd5e1; opacity:.8; background:rgba(0,0,0,.25); padding:2px 6px; border-radius:8px; }
+  .zoomable { cursor: zoom-in; }
   .badge { font-size:12px; color:var(--ink-dark); background:var(--accent); border-radius:999px; padding:4px 8px; font-weight:700; width:fit-content; }
   .name { font-weight:700; font-size:18px; letter-spacing:.2px; }
   .meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:#cbd5e1; }
@@ -40,7 +46,7 @@
   .detail { display:grid; gap:14px; margin-top:16px; }
   .detail h2 { margin:0; font-size:22px; }
   .two-col { display:grid; gap:14px; grid-template-columns: 1fr; }
-  @media (min-width: 850px){ .two-col { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px){ .two-col { grid-template-columns: 1fr 1fr; } }
   .notes { border:1px solid var(--ring); border-radius:14px; padding:12px; color:#d1d5db; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .legend { display:flex; flex-wrap:wrap; gap:8px; }
   .tag { border:1px solid var(--ring); border-radius:999px; padding:4px 10px; font-size:12px; color:#cbd5e1; }
@@ -67,11 +73,22 @@
   }
   .attachGrid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:10px; margin-top:8px; }
   .attachItem{ border:1px solid var(--ring); border-radius:12px; padding:10px; display:flex; gap:10px; align-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
-  .attachThumb{ width:56px; height:56px; border-radius:10px; border:1px solid #1f2942; overflow:hidden; background:#0f152b; flex:0 0 56px; }
+  .attachThumb{ width:64px; height:64px; border-radius:10px; border:1px solid #1f2942; overflow:hidden; background:#0f152b; flex:0 0 64px; }
   .attachThumb img{ width:100%; height:100%; object-fit:cover; display:block; }
   .uploadRow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   input[type="file"]{ display:none; }
   .fileLabel{ border:1px solid var(--ring); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:12px; }
+
+  /* Lightbox (full-screen image viewer) */
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:9999; }
+  .lightbox.open{ display:flex; }
+  .lb-stage{ position:relative; width: min(96vw, 1400px); height: min(92vh, 90vw); }
+  .lb-img, .lb-layer{ position:absolute; inset:0; }
+  .lb-img img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .lb-close{ position:absolute; top:12px; right:12px; background:rgba(255,255,255,.08); border:1px solid #334155; color:#e5e7eb; border-radius:10px; padding:8px 12px; cursor:pointer; }
+  .lb-caption{ position:absolute; left:12px; bottom:12px; color:#cbd5e1; font-size:12px; background:rgba(0,0,0,.35); padding:6px 10px; border-radius:8px; max-width:70ch; }
+  .lb-nav{ position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; }
+  .lb-btn{ pointer-events:auto; border:1px solid #334155; background:rgba(255,255,255,.08); color:#e5e7eb; border-radius:10px; padding:10px 14px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -92,13 +109,22 @@
   </header>
 
   <div id="routerView"></div>
-  <div class="foot">Upload images into your repo and reference them with relative paths. The browser can’t eat GitHub web pages.</div>
+  <div class="foot">Click any image to view full screen. ESC closes, arrow keys navigate attachments. You’re welcome.</div>
+</div>
+
+<!-- Lightbox root -->
+<div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
+  <div class="lb-stage" id="lbStage" aria-label="Image viewer">
+    <div class="lb-img"><img id="lbImg" alt=""></div>
+    <div class="lb-layer" id="lbOverlayHost"></div>
+    <div class="lb-nav"><button class="lb-btn" id="lbPrev">←</button><button class="lb-btn" id="lbNext">→</button></div>
+    <div class="lb-caption" id="lbCap"></div>
+    <button class="lb-close" id="lbClose">Close ✕</button>
+  </div>
 </div>
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
-  // Put your images into an 'Image/' folder in this repo. Reference them like "Image/FlyMachine.jpeg".
-  // If you insist on linking, use 'https://raw.githubusercontent.com/USER/REPO/BRANCH/Image/file.png' or add '?raw=1' to the blob URL.
   const PLAN = {
     label: "Grouped by Muscle",
     groups: {
@@ -109,7 +135,7 @@
           order: 1,
           sets: "3 × 8",
           youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
-          photo: "Image/FlyMachine.jpeg",                                // ✅ relative path served by GitHub Pages
+          photo: "Image/FlyMachine.jpeg",
           muscles: {
             primary: ["Latissimus dorsi"],
             secondary: ["Teres major","Biceps brachii","Mid traps"],
@@ -118,9 +144,9 @@
               { name: "Teres", url: "https://via.placeholder.com/1280x720.png?text=MASK+TERES", active: false }
             ]
           },
-          muscleImage: "Image/eJzbY2gABqYGmAAohkXWFILjgRgAh9gMTA==.png",   // ✅ relative path; rename to something sane later
+          muscleImage: "Image/eJzbY2gABqYGmAAohkXWFILjgRgAh9gMTA==.png",
           attachments: [
-            { name: "Wide lat bar", photo: "Image/OutsideHandle.jpg" }   // ✅ relative path
+            { name: "Wide lat bar", photo: "Image/OutsideHandle.jpg" }
           ],
           notes: "Grip just wider than shoulders, elbows drive down, touch upper chest, slow eccentric, no torso swing."
         }
@@ -143,7 +169,6 @@
 
   planLabel.textContent = PLAN.label || "";
 
-  // EU clock dd/mm/yyyy HH:MM:SS
   function two(n){ return String(n).padStart(2,"0"); }
   function formatEU(d){ return `${two(d.getDate())}/${two(d.getMonth()+1)}/${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`; }
   function tick(){ clockEl.textContent = formatEU(new Date()); }
@@ -164,6 +189,83 @@
     return u;
   }
 
+  /* ---------- Lightbox helpers ---------- */
+  const lightbox = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const lbCap = document.getElementById("lbCap");
+  const lbOverlayHost = document.getElementById("lbOverlayHost");
+  const lbClose = document.getElementById("lbClose");
+  const lbPrev = document.getElementById("lbPrev");
+  const lbNext = document.getElementById("lbNext");
+  let gallery = [];   // [{src, alt, overlays:[url], caption}]
+  let gIndex = 0;
+
+  function openLightbox(items, startIndex=0){
+    gallery = items || [];
+    gIndex = Math.max(0, Math.min(startIndex, gallery.length-1));
+    renderLightbox();
+    lightbox.classList.add("open");
+    document.body.style.overflow = "hidden";
+    updateNavButtons();
+  }
+  function closeLightbox(){
+    lightbox.classList.remove("open");
+    lbOverlayHost.innerHTML = "";
+    document.body.style.overflow = "";
+  }
+  function updateNavButtons(){
+    const multi = gallery.length > 1;
+    lbPrev.style.display = multi ? "" : "none";
+    lbNext.style.display = multi ? "" : "none";
+  }
+  function renderLightbox(){
+    const item = gallery[gIndex];
+    if (!item) return;
+    lbImg.src = item.src;
+    lbImg.alt = item.alt || "";
+    lbCap.textContent = item.caption || "";
+    lbOverlayHost.innerHTML = "";
+    (item.overlays || []).forEach(url=>{
+      const ov = document.createElement("div");
+      ov.className = "maskOverlay";
+      ov.style.setProperty("--mask-url", `url(${url})`);
+      lbOverlayHost.appendChild(ov);
+    });
+  }
+  lbClose.onclick = closeLightbox;
+  lightbox.addEventListener("click", e=>{
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", e=>{
+    if (!lightbox.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowRight" && gIndex < gallery.length-1){ gIndex++; renderLightbox(); }
+    if (e.key === "ArrowLeft" && gIndex > 0){ gIndex--; renderLightbox(); }
+  });
+  lbNext.onclick = ()=>{ if (gIndex < gallery.length-1){ gIndex++; renderLightbox(); } };
+  lbPrev.onclick = ()=>{ if (gIndex > 0){ gIndex--; renderLightbox(); } };
+
+  function makeZoomable(el, getItem){
+    el.classList.add("zoomable");
+    const hint = document.createElement("div");
+    hint.className = "clickhint";
+    hint.textContent = "Click to view";
+    el.appendChild(hint);
+    el.addEventListener("click", ()=>{
+      const item = getItem();
+      if (!item) return;
+      openLightbox([item], 0);
+    });
+  }
+  function makeGalleryZoomable(container, items){
+    container.querySelectorAll(".zoomable").forEach(z=>{
+      z.addEventListener("click", ()=>{
+        openLightbox(items, 0);
+      });
+    });
+  }
+
+  /* ---------- UI renderers ---------- */
   function renderGroupsBar(active){
     const bar = document.createElement("div");
     bar.className = "groups";
@@ -236,7 +338,6 @@
     span.textContent = text;
     return span;
   }
-
   function lsKey(group, slug){ return `muscleImage:${group}:${slug}`; }
 
   function renderExerciseView(group, slug){
@@ -283,14 +384,14 @@
     (ex.muscles?.secondary||[]).forEach(m=>{ const t=document.createElement("span"); t.className="tagS"; t.textContent=m; targets.appendChild(t); });
     section.appendChild(targets);
 
-    // Video + Machine photo
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "two-col";
 
+    // Video
     const videoBox = document.createElement("div");
     videoBox.className = "card";
     const video = document.createElement("div");
-    video.className = "media";
+    video.className = "media video";
     const iframe = document.createElement("iframe");
     iframe.src = toYouTubeEmbed(ex.youtube||"");
     iframe.title = ex.name + " video";
@@ -305,17 +406,15 @@
     videoBox.appendChild(video);
     videoBox.appendChild(vcap);
 
+    // Machine photo
     const photoBox = document.createElement("div");
     photoBox.className = "card";
     const photo = document.createElement("div");
-    photo.className = "media";
+    photo.className = "media image";
     const img = document.createElement("img");
     img.src = ex.photo || "";
     img.alt = ex.name + " machine";
     img.loading = "lazy";
-    img.style.width = "100%";
-    img.style.height = "100%";
-    img.style.objectFit = "cover";
     photo.appendChild(img);
     const pcap = document.createElement("div");
     pcap.className = "dim";
@@ -328,7 +427,10 @@
     mediaWrap.appendChild(photoBox);
     section.appendChild(mediaWrap);
 
-    // Target muscles card with optional red overlays and local upload
+    // Make machine photo zoomable
+    makeZoomable(photo, ()=>({ src: img.src, alt: img.alt, caption: pcap.textContent }));
+
+    // Target muscles card (with overlays and upload)
     const musclesBox = document.createElement("div");
     musclesBox.className = "card";
 
@@ -358,17 +460,15 @@
     musclesBox.appendChild(topRow);
 
     const muscleMedia = document.createElement("div");
-    muscleMedia.className = "media";
+    muscleMedia.className = "media image";
     const imgMuscle = document.createElement("img");
     const local = localStorage.getItem(lsKey(group, slug));
-    imgMuscle.src = local || ex.muscleImage || "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image";
+    imgMuscle.src = local || ex.muscleImage || "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Image";
     imgMuscle.alt = "Muscle targets";
     imgMuscle.loading = "lazy";
-    imgMuscle.style.width = "100%";
-    imgMuscle.style.height = "100%";
-    imgMuscle.style.objectFit = "cover";
     muscleMedia.appendChild(imgMuscle);
 
+    // overlays
     const overlayHost = document.createElement("div");
     overlayHost.style.position = "absolute";
     overlayHost.style.inset = "0";
@@ -390,14 +490,14 @@
     musclesBox.appendChild(legend);
 
     const masks = (ex.muscles?.masks||[]).map(m=>({...m}));
-    function renderOverlays(){
-      overlayHost.innerHTML = "";
+    function renderOverlays(host){
+      host.innerHTML = "";
       masks.forEach(m=>{
         if (!m.active) return;
         const ov = document.createElement("div");
         ov.className = "maskOverlay";
         ov.style.setProperty("--mask-url", `url(${m.url})`);
-        overlayHost.appendChild(ov);
+        host.appendChild(ov);
       });
     }
     function renderChips(){
@@ -406,32 +506,35 @@
         const c = document.createElement("span");
         c.className = "mchip"+(m.active?" active":"");
         c.textContent = m.name;
-        c.onclick = ()=>{ m.active = !m.active; renderChips(); renderOverlays(); };
+        c.onclick = ()=>{ m.active = !m.active; renderChips(); renderOverlays(overlayHost); };
         chipRow.appendChild(c);
       });
     }
     renderChips();
-    renderOverlays();
+    renderOverlays(overlayHost);
 
-    // Local upload handlers (device-only preview)
+    // Upload handlers (local only)
     fileInput.onchange = (e)=>{
       const file = e.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = ()=>{
-        try{
-          localStorage.setItem(lsKey(group, slug), reader.result);
-        }catch(err){
-          alert("Image too large for local storage. Upload to your repo and set muscleImage to that path.");
-        }
+        try{ localStorage.setItem(lsKey(group, slug), reader.result); }
+        catch(err){ alert("Image too large for local storage. Upload to your repo and set muscleImage to that path."); }
         imgMuscle.src = reader.result;
       };
       reader.readAsDataURL(file);
     };
     clearBtn.onclick = ()=>{
       localStorage.removeItem(lsKey(group, slug));
-      imgMuscle.src = ex.muscleImage || "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image";
+      imgMuscle.src = ex.muscleImage || "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Image";
     };
+
+    // Make the muscle image zoomable with overlays mirrored
+    makeZoomable(muscleMedia, ()=>{
+      const activeMasks = masks.filter(m=>m.active).map(m=>m.url);
+      return { src: imgMuscle.src, alt: imgMuscle.alt, overlays: activeMasks, caption: "Target muscles" };
+    });
 
     section.appendChild(musclesBox);
 
@@ -443,6 +546,7 @@
     attHead.className = "name";
     attHead.textContent = "Attachments";
     attBox.appendChild(attHead);
+
     if (!atts.length){
       const none = document.createElement("div");
       none.className = "dim";
@@ -451,13 +555,14 @@
     } else {
       const grid = document.createElement("div");
       grid.className = "attachGrid";
+      const items = [];
       atts.forEach(a=>{
         const item = document.createElement("div");
         item.className = "attachItem";
         const thumb = document.createElement("div");
-        thumb.className = "attachThumb";
+        thumb.className = "attachThumb zoomable";
         const im = document.createElement("img");
-        im.src = a.photo || "https://via.placeholder.com/200x200?text=Attachment";
+        im.src = a.photo || "https://via.placeholder.com/600x600?text=Attachment";
         im.alt = a.name;
         thumb.appendChild(im);
         const label = document.createElement("div");
@@ -465,8 +570,11 @@
         item.appendChild(thumb);
         item.appendChild(label);
         grid.appendChild(item);
+        items.push({ src: im.src, alt: a.name, caption: a.name });
       });
       attBox.appendChild(grid);
+      // make all attachment thumbs a navigable gallery
+      makeGalleryZoomable(attBox, items);
     }
     section.appendChild(attBox);
 
@@ -512,7 +620,6 @@
     urlInput.value = url;
     updateQR();
   });
-
   function updateQR(){
     const u = encodeURIComponent((urlInput.value||"").trim());
     if (!u){ qrImg.src=""; return; }
