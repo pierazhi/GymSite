@@ -128,33 +128,199 @@
   const PLAN = {
     label: "Grouped by Muscle",
     groups: {
-      Back: [
-        {
-          name: "Lat Pulldown",
-          slug: "lat-pulldown",
-          order: 1,
-          sets: "3 × 8",
-          youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
-          photo: "Image/FlyMachine.jpeg",
-          muscles: {
-            primary: ["Latissimus dorsi"],
-            secondary: ["Teres major","Biceps brachii","Mid traps"],
-            masks: [
-              { name: "Lats",  url: "https://via.placeholder.com/1280x720.png?text=MASK+LATS",  active: false },
-              { name: "Teres", url: "https://via.placeholder.com/1280x720.png?text=MASK+TERES", active: false }
-            ]
-          },
-          muscleImage: "Image/eJzbY2gABqYGmAAohkXWFILjgRgAh9gMTA==.png",
-          attachments: [
-            { name: "Wide lat bar", photo: "Image/OutsideHandle.jpg" }
-          ],
-          notes: "Grip just wider than shoulders, elbows drive down, touch upper chest, slow eccentric, no torso swing."
-        }
-      ],
-      Chest: [],
-      Shoulders: [],
-      Legs: []
+  Back: [
+    { name: "Warm-up", slug: "back-warmup", order: 1, sets: "10 min",
+      youtube: "",
+      photo: "https://via.placeholder.com/1280x960?text=Back+Warm-up",
+      muscles: { primary: [], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Back",
+      attachments: [],
+      notes: "Light pulldowns/rows, scap pull-ups, band work. Keep it easy."
+    },
+    { name: "Lat Pulldown (MAG Grip)", slug: "lat-mag", order: 2, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/suWROTA8PVY",
+      photo: "Image/LatPulldownMagGrip/LatPulldownWideGripMuscles",
+      muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Biceps"], masks: [] },
+      muscleImage: "Image/LatPulldownMagGrip/LatPulldownWideGripMuscles",
+      attachments: [{ name: "MAG neutral/wide", photo: "Image/LatPulldownMagGrip/OutsideHandle.jpg"  }],
+      notes: "Elbows drive to ribs, torso still, full stretch at top."
+    },
+    { name: "Lat Pulldown (Wide Grip)", slug: "lat-wide", order: 3, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/bNmvKpJSWKM",
+      photo: "Image/LatPulldownWideGrip/PulldownMachine",
+      muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Mid traps"], masks: [] },
+      muscleImage: "Image/LatPulldownWideGrip/LatPulldownWideGripMuscles",
+      attachments: [{ name: "Wide lat bar", photo: "Image/LatPulldownMagGrip/Bar"  }],
+      notes: "Grip wider than shoulders, chest up, pull to upper chest."
+    },
+    { name: "Rear Delts", slug: "rear-delts-back", order: 4, sets: "3 × 12",
+      youtube: "https://www.youtube.com/shorts/7tgx6QHB0-A",
+      photo: "https://via.placeholder.com/1280x960?text=Rear+Delt+Machine%2FCable",
+      muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Back",
+      attachments: [{ name: "Rear-delt machine or cables", photo: "https://via.placeholder.com/600x600?text=Rear+Delt+Setup" }],
+      notes: "Lead with elbows, no shrug, slight pause at peak."
+    },
+    { name: "Dumbbell Curl", slug: "dumbbell-curl", order: 5, sets: "3 × 10",
+      youtube: "https://www.youtube.com/shorts/FHY_2t7R714",
+      photo: "https://via.placeholder.com/1280x960?text=Dumbbell+Curl",
+      muscles: { primary: ["Biceps brachii"], secondary: ["Brachialis"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Arms",
+      attachments: [{ name: "Dumbbells", photo: "https://via.placeholder.com/600x600?text=Dumbbells" }],
+      notes: "Wrists neutral, shoulders quiet, control the eccentric."
+    },
+    { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-back", order: 6, sets: "3 × 12",
+      youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
+      photo: "https://via.placeholder.com/1280x960?text=Cable+Lateral+Raise",
+      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [{ name: "Single D-handle", photo: "https://via.placeholder.com/600x600?text=D-handle" }],
+      notes: "Soft elbows, raise to shoulder height, avoid shrugging."
+    },
+    { name: "Leg Raises", slug: "leg-raises-back", order: 7, sets: "3 × 15",
+      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+      photo: "https://via.placeholder.com/1280x960?text=Leg+Raises",
+      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Core",
+      attachments: [{ name: "Captain’s chair or bar", photo: "https://via.placeholder.com/600x600?text=Dip+Station" }],
+      notes: "Posterior tilt, slow lower, no swinging."
     }
+  ],
+  Shoulders: [
+    { name: "Warm-up", slug: "shoulder-warmup", order: 1, sets: "10 min",
+      youtube: "",
+      photo: "https://via.placeholder.com/1280x960?text=Shoulder+Warm-up",
+      muscles: { primary: [], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [],
+      notes: "Bands, scapular CARs, light raises. Keep it easy."
+    },
+    { name: "Shoulder Press", slug: "shoulder-press", order: 2, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/k6tzKisR3NY",
+      photo: "https://via.placeholder.com/1280x960?text=Shoulder+Press",
+      muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [{ name: "Bench + dumbbells/bar", photo: "https://via.placeholder.com/600x600?text=Press+Setup" }],
+      notes: "Ribs down, no over-arch, finish with biceps by ears."
+    },
+    { name: "Lateral Raise", slug: "lateral-raise", order: 3, sets: "3 × 12",
+      youtube: "https://www.youtube.com/shorts/Kl3LEzQ5Zqs",
+      photo: "https://via.placeholder.com/1280x960?text=Lateral+Raise",
+      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [{ name: "Dumbbells", photo: "https://via.placeholder.com/600x600?text=Dumbbells" }],
+      notes: "Lead with elbows, slight torso lean OK, controlled tempo."
+    },
+    { name: "Lateral Raise (Cable)", slug: "lat-raise-cable-shoulder", order: 4, sets: "3 × 12",
+      youtube: "https://www.youtube.com/shorts/lMJUXEvcMkQ",
+      photo: "https://via.placeholder.com/1280x960?text=Cable+Lateral+Raise",
+      muscles: { primary: ["Medial delts"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [{ name: "Single D-handle", photo: "https://via.placeholder.com/600x600?text=D-handle" }],
+      notes: "Cable behind body, raise to about 90°, no shrug."
+    },
+    { name: "Machine Shoulder Press", slug: "machine-shoulder-press", order: 5, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/6v4nrRVySj0",
+      photo: "https://via.placeholder.com/1280x960?text=Machine+Shoulder+Press",
+      muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Shoulders",
+      attachments: [{ name: "Machine handles", photo: "https://via.placeholder.com/600x600?text=Machine+Handles" }],
+      notes: "Seat height so handles start at jaw-chin level. Smooth reps."
+    },
+    { name: "Zottman Curl", slug: "zottman-curl", order: 6, sets: "3 × 10",
+      youtube: "https://www.youtube.com/watch?v=wrjEdVZrkhk",
+      photo: "https://via.placeholder.com/1280x960?text=Zottman+Curl",
+      muscles: { primary: ["Biceps brachii","Brachioradialis"], secondary: ["Forearms"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Arms",
+      attachments: [{ name: "Dumbbells", photo: "https://via.placeholder.com/600x600?text=Dumbbells" }],
+      notes: "Supinated up, pronated down. Control the rotation."
+    },
+    { name: "Triceps Rope", slug: "triceps-rope", order: 7, sets: "3 × 12",
+      youtube: "https://www.youtube.com/watch?v=JDEDaZTEzGE",
+      photo: "https://via.placeholder.com/1280x960?text=Triceps+Rope+Pushdown",
+      muscles: { primary: ["Triceps"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Arms",
+      attachments: [{ name: "Rope", photo: "https://via.placeholder.com/600x600?text=Rope" }],
+      notes: "Elbows pinned, spread rope at the bottom, full lockout."
+    },
+    { name: "Leg Raises", slug: "leg-raises-shoulder", order: 8, sets: "3 × 15",
+      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+      photo: "https://via.placeholder.com/1280x960?text=Leg+Raises",
+      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Core",
+      attachments: [{ name: "Captain’s chair or bar", photo: "https://via.placeholder.com/600x600?text=Dip+Station" }],
+      notes: "Posterior tilt, slow eccentric, no momentum."
+    }
+  ],
+  Chest: [
+    { name: "Warm-up", slug: "chest-warmup", order: 1, sets: "10 min",
+      youtube: "",
+      photo: "https://via.placeholder.com/1280x960?text=Chest+Warm-up",
+      muscles: { primary: [], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Chest",
+      attachments: [],
+      notes: "Scap push-ups, band pull-aparts, light presses."
+    },
+    { name: "Chest Press (Dumbbell)", slug: "chest-press-dumbbell", order: 2, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/8fXfwG4ftaQ",
+      photo: "https://via.placeholder.com/1280x960?text=Dumbbell+Bench",
+      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Chest",
+      attachments: [{ name: "Flat bench + dumbbells", photo: "https://via.placeholder.com/600x600?text=Bench+%2B+DB" }],
+      notes: "Wrists stacked, slight arch, control the touch on chest."
+    },
+    { name: "Chest Press (Machine)", slug: "chest-press-machine", order: 3, sets: "3 × 8",
+      youtube: "https://www.youtube.com/watch?v=vnd-GBtTMLI",
+      photo: "https://via.placeholder.com/1280x960?text=Chest+Press+Machine",
+      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Chest",
+      attachments: [{ name: "Machine handles", photo: "https://via.placeholder.com/600x600?text=Machine+Handles" }],
+      notes: "Seat so handles align mid-chest; steady tempo."
+    },
+    { name: "Chest Fly", slug: "chest-fly", order: 4, sets: "3 × 10",
+      youtube: "https://www.youtube.com/shorts/rk8YayRoTRQ",
+      photo: "https://via.placeholder.com/1280x960?text=Chest+Fly",
+      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Chest",
+      attachments: [{ name: "Pec deck or cables", photo: "https://via.placeholder.com/600x600?text=Pec+Deck%2FCables" }],
+      notes: "Soft elbows, big stretch, squeeze at midline."
+    },
+    { name: "Chest Machine", slug: "chest-machine", order: 5, sets: "3 × 8",
+      youtube: "https://www.youtube.com/shorts/2awX3rTGa1k",
+      photo: "https://via.placeholder.com/1280x960?text=Chest+Machine",
+      muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Chest",
+      attachments: [{ name: "Machine handles", photo: "https://via.placeholder.com/600x600?text=Machine+Handles" }],
+      notes: "Scapulae retracted, no bouncing, full range."
+    },
+    { name: "Skullcrushers", slug: "skullcrushers", order: 6, sets: "3 × 10",
+      youtube: "https://www.youtube.com/shorts/whUDFbWQjBI",
+      photo: "https://via.placeholder.com/1280x960?text=Skullcrushers",
+      muscles: { primary: ["Triceps (long head)"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Arms",
+      attachments: [{ name: "EZ-bar or dumbbells", photo: "https://via.placeholder.com/600x600?text=EZ+Bar%2FDB" }],
+      notes: "Upper arms stable, lower to behind head for stretch."
+    },
+    { name: "Rear Delts", slug: "rear-delts-chest", order: 7, sets: "3 × 12",
+      youtube: "https://www.youtube.com/shorts/Gs4e8eVMj-Q",
+      photo: "https://via.placeholder.com/1280x960?text=Rear+Delt+Machine%2FCable",
+      muscles: { primary: ["Rear delts"], secondary: ["Mid traps","Rhomboids"], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Back",
+      attachments: [{ name: "Reverse pec deck or cables", photo: "https://via.placeholder.com/600x600?text=Reverse+Pec+Deck" }],
+      notes: "Control the last 30°; no momentum, no shrug."
+    },
+    { name: "Leg Raises", slug: "leg-raises-chest", order: 8, sets: "3 × 15",
+      youtube: "https://www.youtube.com/shorts/Gtv_pe0E42U",
+      photo: "https://via.placeholder.com/1280x960?text=Leg+Raises",
+      muscles: { primary: ["Lower abs","Hip flexors"], secondary: [], masks: [] },
+      muscleImage: "https://via.placeholder.com/1280x960/11162a/9fb3c8?text=Anatomy+Core",
+      attachments: [{ name: "Captain’s chair or bar", photo: "https://via.placeholder.com/600x600?text=Dip+Station" }],
+      notes: "Posterior tilt, heels together, slow lower."
+    }
+  ],
+  Legs: []
+}
+
   };
   // ---------- STOP EDITING HERE ----------
 
@@ -340,7 +506,7 @@
   }
   function lsKey(group, slug){ return `muscleImage:${group}:${slug}`; }
 
-  function renderExerciseView(group, slug){
+    function renderExerciseView(group, slug){
     const list = (PLAN.groups[group]||[]).slice().sort(byOrder);
     const ex = list.find(e => (e.slug||slugify(e.name)) === slug);
     routerView.innerHTML = "";
@@ -387,9 +553,13 @@
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "two-col";
 
-    // Video
+    // Video card
     const videoBox = document.createElement("div");
     videoBox.className = "card";
+    const vHead = document.createElement("div");
+    vHead.className = "name";
+    vHead.textContent = "How to do it";
+    videoBox.appendChild(vHead);
     const video = document.createElement("div");
     video.className = "media video";
     const iframe = document.createElement("iframe");
@@ -399,16 +569,15 @@
     iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
     video.appendChild(iframe);
-    const vcap = document.createElement("div");
-    vcap.className = "dim";
-    vcap.style.marginTop = "8px";
-    vcap.textContent = "How to do it";
     videoBox.appendChild(video);
-    videoBox.appendChild(vcap);
 
-    // Machine photo
+    // Machine card
     const photoBox = document.createElement("div");
     photoBox.className = "card";
+    const pHead = document.createElement("div");
+    pHead.className = "name";
+    pHead.textContent = "Machine to use";
+    photoBox.appendChild(pHead);
     const photo = document.createElement("div");
     photo.className = "media image";
     const img = document.createElement("img");
@@ -416,19 +585,14 @@
     img.alt = ex.name + " machine";
     img.loading = "lazy";
     photo.appendChild(img);
-    const pcap = document.createElement("div");
-    pcap.className = "dim";
-    pcap.style.marginTop = "8px";
-    pcap.textContent = "Machine to use";
     photoBox.appendChild(photo);
-    photoBox.appendChild(pcap);
 
     mediaWrap.appendChild(videoBox);
     mediaWrap.appendChild(photoBox);
     section.appendChild(mediaWrap);
 
-    // Make machine photo zoomable
-    makeZoomable(photo, ()=>({ src: img.src, alt: img.alt, caption: pcap.textContent }));
+    // Zoomable photo as before
+    makeZoomable(photo, ()=>({ src: img.src, alt: img.alt, caption: "Machine to use" }));
 
     // Target muscles card (with overlays and upload)
     const musclesBox = document.createElement("div");
@@ -456,7 +620,7 @@
     uploadControls.appendChild(label);
     uploadControls.appendChild(clearBtn);
     topRow.appendChild(uploadControls);
-
+    
     musclesBox.appendChild(topRow);
 
     const muscleMedia = document.createElement("div");
