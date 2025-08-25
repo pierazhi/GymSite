@@ -64,34 +64,36 @@
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
   const PLAN = {
-    weekLabel: "Training Week",
+    weekLabel: "Week of 1–7 Sep 2025",
     days: {
       Monday: [
-        { name: "Chest Press", sets: "3 × 12", notes: "Controlled motion.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Chest+Press" },
-        { name: "Leg Press", sets: "4 × 10", notes: "Don’t lock knees.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Leg+Press" }
+        { name: "Squat", sets: "4 × 8", rest: "90 s", notes: "Tempo 3-1-X. Keep chest up.", media: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Squats.jpg" },
+        { name: "Walking Lunges", sets: "3 × 12/leg", rest: "60 s", notes: "Short stride for quads.", media: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4" },
+        { name: "Plank", sets: "3 × 45 s", rest: "45 s", notes: "Squeeze glutes.", media: "" }
       ],
       Tuesday: [
-        { name: "Lat Pulldown", sets: "3 × 12", notes: "Keep back straight.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Lat+Pulldown" },
-        { name: "Seated Row", sets: "3 × 12", notes: "Squeeze shoulder blades.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Seated+Row" }
+        { name: "Incline Push-ups", sets: "4 × 12", rest: "60 s", notes: "Full range.", media: "https://www.youtube.com/watch?v=IODxDxX7oi4" },
+        { name: "Band Row", sets: "4 × 15", rest: "60 s", notes: "Elbows low.", media: "" },
+        { name: "Dead Bug", sets: "3 × 10/side", rest: "45 s", notes: "Ribs down.", media: "" }
       ],
       Wednesday: [
-        { name: "Stationary Bike", sets: "20 min", notes: "Keep cadence steady.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Bike" }
+        { name: "Bike Easy", sets: "25–30 min", rest: "", notes: "Z2 conversational pace.", media: "" }
       ],
       Thursday: [
-        { name: "Shoulder Press", sets: "3 × 10", notes: "Don’t arch back.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Shoulder+Press" },
-        { name: "Lateral Raises", sets: "3 × 12", notes: "Lift to shoulder height.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Lateral+Raise" }
+        { name: "Romanian Deadlift", sets: "4 × 10", rest: "90 s", notes: "Hips back, neutral neck.", media: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Deadlift.jpg" },
+        { name: "Step-ups", sets: "3 × 10/leg", rest: "60 s", notes: "Knee tracks toes.", media: "" },
+        { name: "Side Plank", sets: "3 × 30 s/side", rest: "45 s", notes: "", media: "" }
       ],
       Friday: [
-        { name: "Leg Curl", sets: "3 × 12", notes: "Full range.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Leg+Curl" },
-        { name: "Calf Raise", sets: "4 × 15", notes: "Pause at top.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Calf+Raise" }
+        { name: "Shoulder PT (Y-T-W)", sets: "3 × 12 each", rest: "45 s", notes: "Light band.", media: "" },
+        { name: "Farmer Carry", sets: "4 × 30 m", rest: "60 s", notes: "Tall posture.", media: "" }
       ],
       Saturday: [],
       Sunday: [
-        { name: "Stretching", sets: "15 min", notes: "Focus on hamstrings, hips, shoulders.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Stretching" }
+        { name: "Stretching", sets: "20 min", rest: "", notes: "Hips, hamstrings, T-spine.", media: "" }
       ]
     }
   };
-</script>
   // ---------- STOP EDITING HERE ----------
 
   const daysOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
