@@ -6,7 +6,7 @@
 <title>Training Week</title>
 <meta name="theme-color" content="#0f172a" />
 <style>
-  :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; }
+  :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; --ink-dark:#0a0f1e; }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:linear-gradient(180deg,#0b1020, #0e1326 30%, #0b1020); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; }
   a { color: inherit; text-decoration: none; }
@@ -17,25 +17,30 @@
   .toolbar { display:flex; gap:8px; align-items:center; }
   .btn { border:1px solid var(--ring); background:transparent; color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
   .btn:hover { border-color:#44506a; }
-  .days { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px; overflow:auto hidden; padding: 8px 0 2px; scrollbar-width:none; }
+  .days { display:grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap:8px; overflow:auto hidden; padding: 8px 0 2px; scrollbar-width:none; }
   .chip { padding:10px 12px; border:1px solid var(--ring); border-radius:999px; text-align:center; white-space:nowrap; cursor:pointer; user-select:none; }
-  .chip.active { background:var(--ink); color:#0a0f1e; border-color:transparent; }
+  .chip.active { background:var(--ink); color:var(--ink-dark); border-color:transparent; }
   .grid { display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:14px; margin-top:16px; }
-  .card { border:1px solid var(--ring); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:140px; }
+  .card { border:1px solid var(--ring); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:140px; transition: transform .08s ease, border-color .15s ease; }
+  .card:hover { transform: translateY(-2px); border-color:#44506a; }
   .media { position:relative; border-radius:12px; overflow:hidden; background:#0f152b; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; border:1px solid #1f2942; }
-  .media img, .media video, .media iframe { width:100%; height:100%; object-fit:cover; display:block; }
-  .badge { font-size:12px; color:#0a0f1e; background:var(--accent); border-radius:999px; padding:4px 8px; font-weight:700; width:fit-content; }
+  .badge { font-size:12px; color:var(--ink-dark); background:var(--accent); border-radius:999px; padding:4px 8px; font-weight:700; width:fit-content; }
   .name { font-weight:700; font-size:18px; letter-spacing:.2px; }
-  .desc { color:var(--muted); line-height:1.4; }
-  .meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .meta span { border:1px solid var(--ring); border-radius:999px; padding:4px 10px; font-size:12px; color:#cbd5e1; }
-  .dayhead { margin-top:12px; font-weight:700; opacity:.9; }
+  .meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:#cbd5e1; }
   .empty { opacity:.7; padding:24px; border:1px dashed var(--ring); border-radius:14px; text-align:center; }
   .foot { opacity:.6; font-size:12px; margin:18px 0 6px; text-align:center; }
+  .nav { margin-top:12px; display:flex; align-items:center; gap:10px; }
+  .link { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--ring); border-radius:12px; }
+  .dim { color:var(--muted); }
+  .detail { display:grid; gap:14px; margin-top:16px; }
+  .detail h2 { margin:0; font-size:22px; }
+  .detail .media { aspect-ratio:16/9; }
+  .detail .notes { border:1px solid var(--ring); border-radius:14px; padding:12px; color:#d1d5db; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
+  .two-col { display:grid; gap:14px; grid-template-columns: 1fr; }
+  @media (min-width: 850px){ .two-col { grid-template-columns: 1fr 1fr; } }
   .qrbox { display:none; align-items:center; gap:10px; margin-left:8px; }
   .qrbox input { width:260px; background:transparent; border:1px solid var(--ring); border-radius:10px; padding:10px; color:var(--ink); outline:none; }
   .qrbox img { width:64px; height:64px; border-radius:8px; border:1px solid var(--ring); background:#0f152b; }
-  @media (max-width:560px){ .title h1 { font-size:18px; } }
 </style>
 </head>
 <body>
@@ -54,59 +59,71 @@
     </div>
   </header>
 
-  <div class="days" id="days"></div>
-  <div class="dayhead" id="dayHead"></div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" style="display:none;">No exercises for this day. Maybe “rest” isn’t a crime after all.</div>
-  <div class="foot">Tip: add this page to the phone’s home screen for 1-tap access.</div>
+  <div id="routerView"></div>
+  <div class="foot">Add to home screen for 1-tap access. Yes, like an app without the app store drama.</div>
 </div>
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
   const PLAN = {
-    weekLabel: "Training Week",
+    weekLabel: "Back Day Edition",
     days: {
       Monday: [
-        { name: "Chest Press", sets: "3 × 12", notes: "Controlled motion.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Chest+Press" },
-        { name: "Leg Press", sets: "4 × 10", notes: "Don’t lock knees.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Leg+Press" }
+        {
+          name: "Lat Pulldown",
+          slug: "lat-pulldown",
+          order: 1,
+          sets: "4 × 10–12",
+          youtube: "https://www.youtube.com/watch?v=CAwf7n6Luuc",
+          photo: "https://via.placeholder.com/1280x720?text=Lat+Pulldown+Machine",
+          notes: "Grip slightly wider than shoulders, drive elbows down, stop at chin/upper chest, control the eccentric, no torso swinging."
+        },
+        {
+          name: "Seated Cable Row",
+          slug: "seated-cable-row",
+          order: 2,
+          sets: "4 × 10–12",
+          youtube: "https://www.youtube.com/watch?v=GZbfZ033f74",
+          photo: "https://via.placeholder.com/1280x720?text=Seated+Row+Machine",
+          notes: "Neutral spine, pull to lower ribs, squeeze shoulder blades, avoid shrugging, slow return."
+        },
+        {
+          name: "Chest-Supported Row",
+          slug: "chest-supported-row",
+          order: 3,
+          sets: "3 × 8–10",
+          youtube: "https://www.youtube.com/watch?v=8n0Qk8b7wEw",
+          photo: "https://via.placeholder.com/1280x720?text=Chest+Supported+Row",
+          notes: "Set bench ~30–45°, pull elbows along body line, pause briefly at peak contraction."
+        },
+        {
+          name: "Straight-Arm Pulldown",
+          slug: "straight-arm-pulldown",
+          order: 4,
+          sets: "3 × 12–15",
+          youtube: "https://www.youtube.com/watch?v=4vT4fzjkGCQ",
+          photo: "https://via.placeholder.com/1280x720?text=Straight+Arm+Pulldown",
+          notes: "Arms mostly straight with soft elbows, pull bar in an arc to thighs, feel lats doing the work, ribs down."
+        }
       ],
-      Tuesday: [
-        { name: "Lat Pulldown", sets: "3 × 12", notes: "Keep back straight.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Lat+Pulldown" },
-        { name: "Seated Row", sets: "3 × 12", notes: "Squeeze shoulder blades.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Seated+Row" }
-      ],
-      Wednesday: [
-        { name: "Stationary Bike", sets: "20 min", notes: "Keep cadence steady.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Bike" }
-      ],
-      Thursday: [
-        { name: "Shoulder Press", sets: "3 × 10", notes: "Don’t arch back.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Shoulder+Press" },
-        { name: "Lateral Raises", sets: "3 × 12", notes: "Lift to shoulder height.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Lateral+Raise" }
-      ],
-      Friday: [
-        { name: "Leg Curl", sets: "3 × 12", notes: "Full range.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Leg+Curl" },
-        { name: "Calf Raise", sets: "4 × 15", notes: "Pause at top.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Calf+Raise" }
-      ],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
       Saturday: [],
-      Sunday: [
-        { name: "Stretching", sets: "15 min", notes: "Focus on hamstrings, hips, shoulders.", video: "https://www.w3schools.com/html/mov_bbb.mp4", photo: "https://via.placeholder.com/400x250?text=Stretching" }
-      ]
+      Sunday: []
     }
   };
   // ---------- STOP EDITING HERE ----------
 
   const daysOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-  const daysEl = document.getElementById("days");
-  const gridEl = document.getElementById("grid");
-  const headEl = document.getElementById("dayHead");
-  const emptyEl = document.getElementById("empty");
+  const routerView = document.getElementById("routerView");
   const weekLabel = document.getElementById("weekLabel");
   const shareBtn = document.getElementById("shareBtn");
   const qrBox = document.getElementById("qrBox");
   const urlInput = document.getElementById("urlInput");
   const qrImg = document.getElementById("qrImg");
-
   weekLabel.textContent = PLAN.weekLabel || "";
-  let currentDay = new Date().toLocaleDateString(undefined,{weekday:"long"});
-  if (!daysOrder.includes(currentDay)) currentDay = "Monday";
 
   function isYouTube(u){ return /youtu\.be|youtube\.com/.test(u||""); }
   function toYouTubeEmbed(u){
@@ -119,67 +136,53 @@
     }catch(e){}
     return u;
   }
-  function isVideo(u){ return /\.(mp4|webm|ogg)(\?|$)/i.test(u||""); }
-  function isImage(u){ return /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(u||""); }
 
-  function renderDays(){
-    daysEl.innerHTML = "";
-    daysOrder.forEach(d=>{
-      const btn = document.createElement("div");
-      btn.className = "chip"+(d===currentDay?" active":"");
-      btn.textContent = d;
-      btn.onclick = ()=>{ currentDay = d; renderDays(); renderDay(); };
-      daysEl.appendChild(btn);
-    });
+  function currentWeekday(){
+    const d = new Date().toLocaleDateString(undefined,{weekday:"long"});
+    return daysOrder.includes(d) ? d : "Monday";
   }
 
-  function renderDay(){
-    headEl.textContent = currentDay;
-    gridEl.innerHTML = "";
-    const list = PLAN.days[currentDay] || [];
-    emptyEl.style.display = list.length ? "none" : "block";
-    list.forEach(ex=>{
+  function navTo(hash){ location.hash = hash; }
+  function byOrder(a,b){ return (a.order||999) - (b.order||999); }
+
+  function renderDaysView(day){
+    const list = PLAN.days[day] || [];
+    routerView.innerHTML = "";
+    const daysBar = document.createElement("div");
+    daysBar.className = "days";
+    daysOrder.forEach(d=>{
+      const chip = document.createElement("div");
+      chip.className = "chip"+(d===day?" active":"");
+      chip.textContent = d;
+      chip.onclick = ()=> navTo(`#/day/${d}`);
+      daysBar.appendChild(chip);
+    });
+    routerView.appendChild(daysBar);
+
+    const head = document.createElement("div");
+    head.className = "nav";
+    head.innerHTML = `<span class="dim">Showing</span> <strong>${day}</strong>`;
+    routerView.appendChild(head);
+
+    if (!list.length){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No exercises here yet. Truly the dream.";
+      routerView.appendChild(empty);
+      return;
+    }
+
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    list.slice().sort(byOrder).forEach(ex=>{
       const card = document.createElement("div");
       card.className = "card";
-
-      if (ex.media){
-        const media = document.createElement("div");
-        media.className = "media";
-        if (isYouTube(ex.media)){
-          const iframe = document.createElement("iframe");
-          iframe.src = toYouTubeEmbed(ex.media);
-          iframe.title = ex.name;
-          iframe.loading = "lazy";
-          iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-          iframe.referrerPolicy = "strict-origin-when-cross-origin";
-          media.appendChild(iframe);
-        } else if (isVideo(ex.media)) {
-          const vid = document.createElement("video");
-          vid.src = ex.media;
-          vid.controls = true;
-          vid.preload = "none";
-          media.appendChild(vid);
-        } else if (isImage(ex.media)) {
-          const img = document.createElement("img");
-          img.src = ex.media;
-          img.loading = "lazy";
-          img.alt = ex.name;
-          media.appendChild(img);
-        } else {
-          const link = document.createElement("a");
-          link.href = ex.media;
-          link.textContent = "Open media";
-          link.target = "_blank";
-          media.appendChild(link);
-        }
-        card.appendChild(media);
-      }
-
+      card.style.cursor = "pointer";
       const row = document.createElement("div");
       row.style.display="flex"; row.style.alignItems="center"; row.style.justifyContent="space-between";
       const name = document.createElement("div");
       name.className = "name";
-      name.textContent = ex.name || "Exercise";
+      name.textContent = `${ex.order ? ex.order+". " : ""}${ex.name}`;
       const badge = document.createElement("div");
       badge.className = "badge";
       badge.textContent = ex.sets || "";
@@ -188,23 +191,120 @@
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      if (ex.rest) { const s=document.createElement("span"); s.textContent = `Rest ${ex.rest}`; meta.appendChild(s); }
-      if (ex.tempo) { const s=document.createElement("span"); s.textContent = `Tempo ${ex.tempo}`; meta.appendChild(s); }
+      meta.textContent = "Tap to open details";
       card.appendChild(meta);
 
-      if (ex.notes){
-        const desc = document.createElement("div");
-        desc.className = "desc";
-        desc.textContent = ex.notes;
-        card.appendChild(desc);
-      }
-
-      gridEl.appendChild(card);
+      card.onclick = ()=> navTo(`#/exercise/${encodeURIComponent(day)}/${encodeURIComponent(ex.slug||slugify(ex.name))}`);
+      grid.appendChild(card);
     });
+    routerView.appendChild(grid);
   }
 
-  renderDays();
-  renderDay();
+  function renderExerciseView(day, slug){
+    const list = PLAN.days[day] || [];
+    const ex = list.find(e => (e.slug||slugify(e.name)) === slug);
+    routerView.innerHTML = "";
+    const back = document.createElement("div");
+    back.className = "nav";
+    const backLink = document.createElement("a");
+    backLink.className = "link";
+    backLink.href = `#/day/${encodeURIComponent(day)}`;
+    backLink.textContent = "← Back to " + day;
+    back.appendChild(backLink);
+    routerView.appendChild(back);
+
+    if (!ex){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Exercise not found. Either the plan changed or the universe is messing with you.";
+      routerView.appendChild(empty);
+      return;
+    }
+
+    const section = document.createElement("section");
+    section.className = "detail";
+    const heading = document.createElement("h2");
+    heading.textContent = ex.name;
+    section.appendChild(heading);
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const badge = document.createElement("div");
+    badge.className = "badge";
+    badge.textContent = ex.sets || "";
+    meta.appendChild(badge);
+    section.appendChild(meta);
+
+    const mediaWrap = document.createElement("div");
+    mediaWrap.className = "two-col";
+
+    const videoBox = document.createElement("div");
+    videoBox.className = "card";
+    const video = document.createElement("div");
+    video.className = "media";
+    const iframe = document.createElement("iframe");
+    iframe.src = toYouTubeEmbed(ex.youtube||"");
+    iframe.title = ex.name + " video";
+    iframe.loading = "lazy";
+    iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    video.appendChild(iframe);
+    const vcap = document.createElement("div");
+    vcap.className = "dim";
+    vcap.style.marginTop = "8px";
+    vcap.textContent = "How to do it";
+    videoBox.appendChild(video);
+    videoBox.appendChild(vcap);
+
+    const photoBox = document.createElement("div");
+    photoBox.className = "card";
+    const photo = document.createElement("div");
+    photo.className = "media";
+    const img = document.createElement("img");
+    img.src = ex.photo || "";
+    img.alt = ex.name + " machine";
+    img.loading = "lazy";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    photo.appendChild(img);
+    const pcap = document.createElement("div");
+    pcap.className = "dim";
+    pcap.style.marginTop = "8px";
+    pcap.textContent = "Machine to use";
+    photoBox.appendChild(photo);
+    photoBox.appendChild(pcap);
+
+    mediaWrap.appendChild(videoBox);
+    mediaWrap.appendChild(photoBox);
+    section.appendChild(mediaWrap);
+
+    const notes = document.createElement("div");
+    notes.className = "notes";
+    notes.textContent = ex.notes || "No notes. Breathe, move well, don’t be reckless.";
+    section.appendChild(notes);
+
+    routerView.appendChild(section);
+  }
+
+  function slugify(s){
+    return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  }
+
+  function router(){
+    const hash = location.hash || "";
+    const parts = hash.split("/").map(x=>decodeURIComponent(x.replace(/^#*/, "")));
+    if (parts[1] === "exercise" && parts.length >= 4){
+      const day = parts[2] || currentWeekday();
+      const slug = parts[3];
+      renderExerciseView(day, slug);
+    } else {
+      const day = (parts[1] === "day" && parts[2]) ? parts[2] : currentWeekday();
+      renderDaysView(day);
+    }
+  }
+  window.addEventListener("hashchange", router);
+  router();
 
   shareBtn.addEventListener("click", async ()=> {
     const url = location.href;
@@ -227,7 +327,6 @@
   function updateQR(){
     const u = encodeURIComponent((urlInput.value||"").trim());
     if (!u){ qrImg.src=""; return; }
-    // Using Google Chart's QR on-the-fly. Replace later if you want a local generator.
     qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=M|0&chl=${u}`;
   }
   urlInput.addEventListener("input", updateQR);
