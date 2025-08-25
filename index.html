@@ -6,7 +6,7 @@
 <title>Training Plan</title>
 <meta name="theme-color" content="#0f172a" />
 <style>
-  :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; --ink-dark:#0a0f1e; }
+  :root { --bg:#0b1020; --card:#11162a; --ink:#e5e7eb; --muted:#aab1c2; --accent:#6ee7b7; --ring:#334155; --ink-dark:#0a0f1e; --red:#ef4444; }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:linear-gradient(180deg,#0b1020, #0e1326 30%, #0b1020); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
   a { color: inherit; text-decoration: none; }
@@ -41,16 +41,29 @@
   .notes { border:1px solid var(--ring); border-radius:14px; padding:12px; color:#d1d5db; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); }
   .legend { display:flex; flex-wrap:wrap; gap:8px; }
   .tag { border:1px solid var(--ring); border-radius:999px; padding:4px 10px; font-size:12px; color:#cbd5e1; }
-  .toggle { display:flex; gap:8px; background:rgba(255,255,255,0.03); border:1px solid var(--ring); border-radius:12px; padding:4px; width:max-content; }
-  .toggle button { border:none; background:transparent; color:var(--ink); padding:6px 10px; border-radius:8px; cursor:pointer; }
-  .toggle button.active { background:var(--ink); color:var(--ink-dark); }
+  .toggleRow { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .muscleChips { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .mchip { border:1px solid var(--ring); border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-select:none; }
+  .mchip.active { background:var(--ink); color:var(--ink-dark); border-color:transparent; }
   .qrbox { display:none; align-items:center; gap:10px; margin-left:8px; }
   .qrbox input { width:260px; background:transparent; border:1px solid var(--ring); border-radius:10px; padding:10px; color:var(--ink); outline:none; }
   .qrbox img { width:64px; height:64px; border-radius:8px; border:1px solid var(--ring); background:#0f152b; }
-  model-viewer { width:100%; height:100%; background:transparent; }
+  /* Red overlay (uses mask images you provide) */
+  .maskOverlay{
+    position:absolute; inset:0;
+    background:var(--red);
+    opacity:.85;
+    pointer-events:none;
+    mask-image: var(--mask-url);
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-image: var(--mask-url);
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
 </style>
-<!-- Optional 3D viewer. Safe to leave in even if unused. -->
-<script type="module" src="https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -75,6 +88,8 @@
 
 <script>
   // ---------- EDIT ONLY THIS DATA BLOCK ----------
+  // Provide: a base anatomy image per exercise (muscleImage), and a list of mask PNGs in muscles.masks.
+  // Each mask is a transparent PNG where white = the muscle area to highlight in red.
   const PLAN = {
     label: "Grouped by Muscle",
     groups: {
@@ -82,86 +97,140 @@
         { name: "Lat Pulldown", slug: "lat-pulldown", order: 1, sets: "4 × 10–12",
           youtube: "https://www.youtube.com/watch?v=CAwf7n6Luuc",
           photo: "https://via.placeholder.com/1280x720?text=Lat+Pulldown+Machine",
-          muscles: { primary: ["Latissimus dorsi"], secondary: ["Teres major","Biceps brachii","Mid traps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Lats+(Front/Back)",
-          model3d: "" /* optional: put a GLB URL here to enable the 3D toggle, e.g. "https://example.com/human_muscles.glb" */,
+          muscles: {
+            primary: ["Latissimus dorsi"],
+            secondary: ["Teres major","Biceps brachii","Mid traps"],
+            // These are toggleable chips. Replace the mask URLs with your real PNGs.
+            masks: [
+              { name: "Lats",       url: "https://via.placeholder.com/1280x720.png?text=MASK+LATS", active: true },
+              { name: "Teres",      url: "https://via.placeholder.com/1280x720.png?text=MASK+TERES", active: false },
+              { name: "Biceps",     url: "https://via.placeholder.com/1280x720.png?text=MASK+BICEPS", active: false },
+              { name: "Mid traps",  url: "https://via.placeholder.com/1280x720.png?text=MASK+MID+TRAPS", active: false }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Back+View",
           notes: "Grip just wider than shoulders, elbows drive down, touch upper chest, slow eccentric, no torso swing." },
         { name: "Seated Cable Row", slug: "seated-cable-row", order: 2, sets: "4 × 10–12",
           youtube: "https://www.youtube.com/watch?v=GZbfZ033f74",
           photo: "https://via.placeholder.com/1280x720?text=Seated+Row+Machine",
-          muscles: { primary: ["Mid–lower traps","Rhomboids"], secondary: ["Lats","Rear delts","Biceps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Mid-back",
-          model3d: "",
-          notes: "Neutral spine, pull to lower ribs, squeeze shoulder blades together, avoid shrugging." },
+          muscles: {
+            primary: ["Mid–lower traps","Rhomboids"],
+            secondary: ["Lats","Rear delts","Biceps"],
+            masks: [
+              { name: "Mid traps",  url: "https://via.placeholder.com/1280x720.png?text=MASK+MID+TRAPS", active: true },
+              { name: "Rhomboids",  url: "https://via.placeholder.com/1280x720.png?text=MASK+RHOMBOIDS", active: true },
+              { name: "Rear delts", url: "https://via.placeholder.com/1280x720.png?text=MASK+REAR+DELTS", active: false }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Back+View",
+          notes: "Neutral spine, pull to lower ribs, squeeze shoulder blades, avoid shrugging." },
         { name: "Chest-Supported Row", slug: "chest-supported-row", order: 3, sets: "3 × 8–10",
           youtube: "https://www.youtube.com/watch?v=8n0Qk8b7wEw",
           photo: "https://via.placeholder.com/1280x720?text=Chest+Supported+Row",
-          muscles: { primary: ["Lats","Mid traps"], secondary: ["Rear delts","Biceps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Lats+%2F+Scapular+retractors",
-          model3d: "",
-          notes: "Bench 30–45°, pull elbows along body, brief pause at top, keep ribs down." },
+          muscles: {
+            primary: ["Lats","Mid traps"],
+            secondary: ["Rear delts","Biceps"],
+            masks: [
+              { name: "Lats",       url: "https://via.placeholder.com/1280x720.png?text=MASK+LATS", active: true },
+              { name: "Mid traps",  url: "https://via.placeholder.com/1280x720.png?text=MASK+MID+TRAPS", active: true }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Back+View",
+          notes: "Bench 30–45°, elbows along body, brief pause at top, ribs down." },
         { name: "Straight-Arm Pulldown", slug: "straight-arm-pulldown", order: 4, sets: "3 × 12–15",
           youtube: "https://www.youtube.com/watch?v=4vT4fzjkGCQ",
           photo: "https://via.placeholder.com/1280x720?text=Straight+Arm+Pulldown",
-          muscles: { primary: ["Lats"], secondary: ["Teres major","Long head triceps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Lats+%2F+Teres",
-          model3d: "",
+          muscles: {
+            primary: ["Lats"],
+            secondary: ["Teres major","Long head triceps"],
+            masks: [
+              { name: "Lats",      url: "https://via.placeholder.com/1280x720.png?text=MASK+LATS", active: true },
+              { name: "Teres",     url: "https://via.placeholder.com/1280x720.png?text=MASK+TERES", active: false },
+              { name: "Triceps LH",url: "https://via.placeholder.com/1280x720.png?text=MASK+TRICEPS+LONG", active: false }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Back+View",
           notes: "Arms mostly straight, pull in an arc to thighs, lats initiate, no rib flaring." }
       ],
       Chest: [
         { name: "Chest Press Machine", slug: "chest-press", order: 1, sets: "4 × 8–12",
           youtube: "https://www.youtube.com/watch?v=2tKXW4J9xCc",
           photo: "https://via.placeholder.com/1280x720?text=Chest+Press+Machine",
-          muscles: { primary: ["Pectoralis major"], secondary: ["Anterior delts","Triceps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Chest",
-          model3d: "",
-          notes: "Shoulders packed, slow down phase, optional full lockout, feet planted." },
+          muscles: {
+            primary: ["Pectoralis major"],
+            secondary: ["Anterior delts","Triceps"],
+            masks: [
+              { name: "Pecs",   url: "https://via.placeholder.com/1280x720.png?text=MASK+PECS", active: true },
+              { name: "Ant delts", url: "https://via.placeholder.com/1280x720.png?text=MASK+ANT+DELTS", active: false },
+              { name: "Triceps", url: "https://via.placeholder.com/1280x720.png?text=MASK+TRICEPS", active: false }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Front+View",
+          notes: "Shoulders packed, slow down phase, feet planted." },
         { name: "Incline Dumbbell Press", slug: "incline-db-press", order: 2, sets: "3 × 8–10",
           youtube: "https://www.youtube.com/watch?v=8iPEnn-ltC8",
           photo: "https://via.placeholder.com/1280x720?text=Incline+Bench",
-          muscles: { primary: ["Upper chest"], secondary: ["Anterior delts","Triceps"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Upper+Chest",
-          model3d: "",
+          muscles: {
+            primary: ["Upper chest"],
+            secondary: ["Anterior delts","Triceps"],
+            masks: [
+              { name: "Upper chest", url: "https://via.placeholder.com/1280x720.png?text=MASK+UPPER+CHEST", active: true }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Front+View",
           notes: "30° incline, wrists stacked, slight pause at chest, no bouncing." }
       ],
       Shoulders: [
         { name: "Seated Shoulder Press", slug: "seated-shoulder-press", order: 1, sets: "4 × 8–10",
           youtube: "https://www.youtube.com/watch?v=qEwKCR5JCog",
           photo: "https://via.placeholder.com/1280x720?text=Shoulder+Press+Machine",
-          muscles: { primary: ["Anterior delts","Medial delts"], secondary: ["Triceps","Upper traps (stabilizers)"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Delts",
-          model3d: "",
+          muscles: {
+            primary: ["Anterior delts","Medial delts"],
+            secondary: ["Triceps"],
+            masks: [
+              { name: "Ant delts", url: "https://via.placeholder.com/1280x720.png?text=MASK+ANT+DELTS", active: true },
+              { name: "Medial delts", url: "https://via.placeholder.com/1280x720.png?text=MASK+MED+DELTS", active: true }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Front+View",
           notes: "No lower back arch, control tempo, finish with biceps by ears." },
         { name: "Lateral Raise Machine", slug: "lateral-raise", order: 2, sets: "3 × 12–15",
           youtube: "https://www.youtube.com/watch?v=3VcKaXpzqRo",
           photo: "https://via.placeholder.com/1280x720?text=Lateral+Raise+Machine",
-          muscles: { primary: ["Medial delts"], secondary: ["Supraspinatus (initiation)"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Medial+Delts",
-          model3d: "",
+          muscles: {
+            primary: ["Medial delts"],
+            masks: [
+              { name: "Medial delts", url: "https://via.placeholder.com/1280x720.png?text=MASK+MED+DELTS", active: true }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Front+View",
           notes: "Soft elbows, lift to shoulder height, lead with elbows, no shrugging." }
       ],
       Legs: [
         { name: "Leg Press", slug: "leg-press", order: 1, sets: "4 × 10–12",
           youtube: "https://www.youtube.com/watch?v=IZxyjW7MPJQ",
           photo: "https://via.placeholder.com/1280x720?text=Leg+Press+Machine",
-          muscles: { primary: ["Quads","Glutes"], secondary: ["Adductors","Calves (stabilizers)"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Quads+%2F+Glutes",
-          model3d: "",
+          muscles: {
+            primary: ["Quads","Glutes"],
+            secondary: ["Adductors"],
+            masks: [
+              { name: "Quads",  url: "https://via.placeholder.com/1280x720.png?text=MASK+QUADS", active: true },
+              { name: "Glutes", url: "https://via.placeholder.com/1280x720.png?text=MASK+GLUTES", active: false }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Front%2FRear",
           notes: "Shoulder-width stance, deep but controlled ROM, don’t slam lockout." },
         { name: "Seated Leg Curl", slug: "seated-leg-curl", order: 2, sets: "3 × 12–15",
           youtube: "https://www.youtube.com/watch?v=1Tq3QdYUuHs",
           photo: "https://via.placeholder.com/1280x720?text=Leg+Curl+Machine",
-          muscles: { primary: ["Hamstrings"], secondary: ["Calves (gastrocnemius)"] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Hamstrings",
-          model3d: "",
-          notes: "Pad above ankles, hips back, squeeze at bottom, slow return." },
-        { name: "Calf Raise", slug: "calf-raise", order: 3, sets: "4 × 12–15",
-          youtube: "https://www.youtube.com/watch?v=YMmgqO8Jo-k",
-          photo: "https://via.placeholder.com/1280x720?text=Calf+Raise+Machine",
-          muscles: { primary: ["Gastrocnemius","Soleus"], secondary: [] },
-          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Target+Muscles:+Calves",
-          model3d: "",
-          notes: "Full stretch, pause at top, keep knees soft." }
+          muscles: {
+            primary: ["Hamstrings"],
+            masks: [
+              { name: "Hamstrings", url: "https://via.placeholder.com/1280x720.png?text=MASK+HAMSTRINGS", active: true }
+            ]
+          },
+          muscleImage: "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image:+Rear+View",
+          notes: "Pad above ankles, hips back, squeeze at bottom, slow return." }
       ]
     }
   };
@@ -184,17 +253,6 @@
   function tick(){ clockEl.textContent = formatEU(new Date()); }
   tick(); setInterval(tick, 1000);
 
-  function isYouTube(u){ return /youtu\.be|youtube\.com/.test(u||""); }
-  function toYouTubeEmbed(u){
-    try{
-      const url=new URL(u);
-      if(url.hostname==="youtu.be"){ return "https://www.youtube.com/embed/"+url.pathname.slice(1); }
-      const id = url.searchParams.get("v");
-      if(id) return "https://www.youtube.com/embed/"+id;
-      if(url.pathname.startsWith("/shorts/")) return "https://www.youtube.com/embed/"+url.pathname.split("/")[2];
-    }catch(e){}
-    return u;
-  }
   function slugify(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   function navTo(hash){ location.hash = hash; }
   function byOrder(a,b){ return (a.order||999) - (b.order||999); }
@@ -304,10 +362,10 @@
     meta.appendChild(badge);
     section.appendChild(meta);
 
+    // Video + Machine photo
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "two-col";
 
-    // Video box
     const videoBox = document.createElement("div");
     videoBox.className = "card";
     const video = document.createElement("div");
@@ -326,7 +384,6 @@
     videoBox.appendChild(video);
     videoBox.appendChild(vcap);
 
-    // Machine photo box
     const photoBox = document.createElement("div");
     photoBox.className = "card";
     const photo = document.createElement("div");
@@ -350,9 +407,10 @@
     mediaWrap.appendChild(photoBox);
     section.appendChild(mediaWrap);
 
-    // Target muscles: Photo <-> 3D toggle
+    // Target muscles with red highlight overlays
     const musclesBox = document.createElement("div");
     musclesBox.className = "card";
+
     const topRow = document.createElement("div");
     topRow.style.display = "flex";
     topRow.style.alignItems = "center";
@@ -362,37 +420,44 @@
     musclesTitle.textContent = "Target muscles";
     topRow.appendChild(musclesTitle);
 
-    const toggle = document.createElement("div");
-    toggle.className = "toggle";
-    const btnImg = document.createElement("button"); btnImg.textContent = "Photo";
-    const btn3D  = document.createElement("button"); btn3D.textContent = "3D";
-    toggle.appendChild(btnImg); toggle.appendChild(btn3D);
-    topRow.appendChild(toggle);
+    // Bulk controls
+    const bulk = document.createElement("div");
+    bulk.className = "toggleRow";
+    const allBtn = document.createElement("button");
+    allBtn.className = "btn"; allBtn.textContent = "Select all";
+    const noneBtn = document.createElement("button");
+    noneBtn.className = "btn"; noneBtn.textContent = "Clear";
+    bulk.appendChild(allBtn); bulk.appendChild(noneBtn);
+    topRow.appendChild(bulk);
+
     musclesBox.appendChild(topRow);
 
     const muscleMedia = document.createElement("div");
     muscleMedia.className = "media";
     const imgMuscle = document.createElement("img");
-    imgMuscle.src = ex.muscleImage || "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Muscle+Targets";
+    imgMuscle.src = ex.muscleImage || "https://via.placeholder.com/1280x720/11162a/9fb3c8?text=Anatomy+Image";
     imgMuscle.alt = "Muscle targets";
     imgMuscle.loading = "lazy";
     imgMuscle.style.width = "100%";
     imgMuscle.style.height = "100%";
     imgMuscle.style.objectFit = "cover";
-
-    // 3D viewer placeholder
-    const viewer = document.createElement("model-viewer");
-    viewer.style.display = "none";
-    viewer.setAttribute("camera-controls", "");
-    viewer.setAttribute("exposure", "0.9");
-    viewer.setAttribute("shadow-intensity", "0");
-    viewer.setAttribute("interaction-prompt", "none");
-    if (ex.model3d){ viewer.src = ex.model3d; } // if empty, we'll keep it hidden
-
     muscleMedia.appendChild(imgMuscle);
-    muscleMedia.appendChild(viewer);
+
+    // Container for overlays
+    const overlayHost = document.createElement("div");
+    overlayHost.style.position = "absolute";
+    overlayHost.style.inset = "0";
+    overlayHost.style.pointerEvents = "none";
+    muscleMedia.appendChild(overlayHost);
+
     musclesBox.appendChild(muscleMedia);
 
+    // Chip list
+    const chipRow = document.createElement("div");
+    chipRow.className = "muscleChips";
+    musclesBox.appendChild(chipRow);
+
+    // Primary/secondary legend
     const legend = document.createElement("div");
     legend.className = "legend";
     const primaries = (ex.muscles?.primary||[]);
@@ -401,22 +466,38 @@
     if (secondaries.length){ legend.appendChild(pill("Secondary: " + secondaries.join(", "))); }
     musclesBox.appendChild(legend);
 
-    // Toggle logic
-    function setToggle(which){
-      btnImg.classList.toggle("active", which==="img");
-      btn3D.classList.toggle("active", which==="3d");
-      imgMuscle.style.display = which==="img" ? "block" : "none";
-      viewer.style.display = which==="3d" ? "block" : "none";
+    // Build overlays from masks
+    const masks = (ex.muscles?.masks||[]).map(m=>({...m}));
+    const overlayMap = new Map();
+
+    function renderOverlays(){
+      overlayHost.innerHTML = "";
+      masks.forEach(m=>{
+        if (!m.active) return;
+        const ov = document.createElement("div");
+        ov.className = "maskOverlay";
+        ov.style.setProperty("--mask-url", `url(${m.url})`);
+        overlayHost.appendChild(ov);
+        overlayMap.set(m.name, ov);
+      });
     }
-    btnImg.onclick = ()=> setToggle("img");
-    btn3D.onclick  = ()=> {
-      if (!ex.model3d){
-        alert("Add a GLB model URL in the plan (model3d) to enable 3D.");
-        return;
-      }
-      setToggle("3d");
-    };
-    setToggle("img");
+
+    function renderChips(){
+      chipRow.innerHTML = "";
+      masks.forEach(m=>{
+        const c = document.createElement("span");
+        c.className = "mchip"+(m.active?" active":"");
+        c.textContent = m.name;
+        c.onclick = ()=>{ m.active = !m.active; renderChips(); renderOverlays(); };
+        chipRow.appendChild(c);
+      });
+    }
+
+    allBtn.onclick = ()=>{ masks.forEach(m=>m.active=true); renderChips(); renderOverlays(); };
+    noneBtn.onclick = ()=>{ masks.forEach(m=>m.active=false); renderChips(); renderOverlays(); };
+
+    renderChips();
+    renderOverlays();
 
     section.appendChild(musclesBox);
 
@@ -445,6 +526,17 @@
   router();
 
   // Share + QR helper
+  function toYouTubeEmbed(u){
+    try{
+      const url=new URL(u);
+      if(url.hostname==="youtu.be"){ return "https://www.youtube.com/embed/"+url.pathname.slice(1); }
+      const id = url.searchParams.get("v");
+      if(id) return "https://www.youtube.com/embed/"+id;
+      if(url.pathname.startsWith("/shorts/")) return "https://www.youtube.com/embed/"+url.pathname.split("/")[2];
+    }catch(e){}
+    return u;
+  }
+
   shareBtn.addEventListener("click", async ()=> {
     const url = location.href;
     try{
@@ -466,6 +558,7 @@
   function updateQR(){
     const u = encodeURIComponent((urlInput.value||"").trim());
     if (!u){ qrImg.src=""; return; }
+    // This endpoint just returns a QR PNG for the typed URL
     qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=256x256&chld=M|0&chl=${u}`;
   }
   urlInput.addEventListener("input", updateQR);
